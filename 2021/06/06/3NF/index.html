@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+
+<html lang="zh-Hans">
+
+<head>
+    
+    <title>分解为具有无损连接性和依赖保持性的3NF的方法以及例子 - Hurry Rechard&#39;s Blog</title>
+    <meta charset="UTF-8">
+    <meta name="keywords" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5">
+    
+    
+
+    <!-- Site Verification -->
+    <meta name="baidu-site-verification" content="code-k5HcBW1pgY" />
+
+    <link rel="shortcut icon" href="https://raw.githubusercontent.com/hurry-hub/blogimage/main/img/favicon.ico" type="image/x-icon" />
+    <meta name="description" content="​    此篇为本人个人博客的第一篇，从博主个人的csdn搬运而来，关于数据库的3NF 分解问题。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="分解为具有无损连接性和依赖保持性的3NF的方法以及例子">
+<meta property="og:url" content="https://hurry-hub.github.io/2021/06/06/3NF/index.html">
+<meta property="og:site_name" content="Hurry Rechard&#39;s Blog">
+<meta property="og:description" content="​    此篇为本人个人博客的第一篇，从博主个人的csdn搬运而来，关于数据库的3NF 分解问题。">
+<meta property="og:locale">
+<meta property="article:published_time" content="2021-06-06T06:41:38.000Z">
+<meta property="article:modified_time" content="2021-12-01T04:36:21.475Z">
+<meta property="article:author" content="Hurry Rechard">
+<meta property="article:tag" content="数据库">
+<meta name="twitter:card" content="summary">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/combine/npm/highlight.js@9.15.8/styles/atom-one-dark.css,npm/justifiedGallery@3.8.1/dist/css/justifiedGallery.min.css,gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css,npm/hexo-theme-nexmoe@latest/source/lib/mdui_043tiny/css/mdui.css,npm/hexo-theme-nexmoe@latest/source/lib/iconfont/iconfont.css?v=233" crossorigin>
+    <link rel="stylesheet" href="/css/style.css?v=1649861912810">
+    
+        <link rel="stylesheet" href="/css/dark.css?v=1649861912810">
+     
+    
+    <link rel="stylesheet" href="/lib/iconfont/iconfont.css?v=1649861912810">
+    
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+<body class="mdui-drawer-body-left">
+    
+    <div id="nexmoe-background">
+        <div class="nexmoe-bg" style="background-image: url(https://raw.githubusercontent.com/hurry-hub/blogimage/main/img/ayase.png)"></div>
+        <div class="mdui-appbar mdui-shadow-0">
+            <div class="mdui-toolbar">
+                <a mdui-drawer="{target: '#drawer', swipe: true}" title="menu" class="mdui-btn mdui-btn-icon mdui-ripple"><i class="mdui-icon nexmoefont icon-menu"></i></a>
+                <div class="mdui-toolbar-spacer"></div>
+                <!--<a href="javascript:;" class="mdui-btn mdui-btn-icon"><i class="mdui-icon material-icons">search</i></a>-->
+                <a href="/" title="Hurry Rechard" class="mdui-btn mdui-btn-icon"><img src="https://raw.githubusercontent.com/hurry-hub/blogimage/main/img/violet%20a.bmp# 网站 Logo" alt="Hurry Rechard"></a>
+            </div>
+        </div>
+    </div>
+    <div id="nexmoe-header">
+        <div class="nexmoe-drawer mdui-drawer" id="drawer">
+    <div class="nexmoe-avatar mdui-ripple">
+        <a href="/" title="Hurry Rechard">
+            <img src="https://raw.githubusercontent.com/hurry-hub/blogimage/main/img/violet%20a.bmp# 网站 Logo" alt="Hurry Rechard" alt="Hurry Rechard">
+        </a>
+    </div>
+    <div class="nexmoe-count">
+        <div><span>Articles</span>6</div>
+        <div><span>Tags</span>3</div>
+        <div><span>Categories</span>3</div>
+    </div>
+    <div class="nexmoe-list mdui-list" mdui-collapse="{accordion: true}">
+        
+        <a class="nexmoe-list-item mdui-list-item mdui-ripple false" href="/" title="回到首页">
+            <i class="mdui-list-item-icon nexmoefont icon-home"></i>
+            <div class="mdui-list-item-content">
+                回到首页
+            </div>
+        </a>
+        
+        <a class="nexmoe-list-item mdui-list-item mdui-ripple false" href="/archives.html" title="文章归档">
+            <i class="mdui-list-item-icon nexmoefont icon-container"></i>
+            <div class="mdui-list-item-content">
+                文章归档
+            </div>
+        </a>
+        
+        <a class="nexmoe-list-item mdui-list-item mdui-ripple false" href="/about.html" title="关于博客">
+            <i class="mdui-list-item-icon nexmoefont icon-info-circle"></i>
+            <div class="mdui-list-item-content">
+                关于博客
+            </div>
+        </a>
+        
+        <a class="nexmoe-list-item mdui-list-item mdui-ripple false" href="/py.html" title="我的朋友">
+            <i class="mdui-list-item-icon nexmoefont icon-unorderedlist"></i>
+            <div class="mdui-list-item-content">
+                我的朋友
+            </div>
+        </a>
+        
+    </div>
+    <aside id="nexmoe-sidebar">
+    
+    <div class="nexmoe-widget-wrap">
+    <div class="nexmoe-widget nexmoe-search">
+         
+            <form id="search_form" action_e="https://cn.bing.com/search?q=site:hurry-hub.github.io" onsubmit="return search();">
+                <label><input id="search_value" name="q" type="search" placeholder="Search"></label>
+            </form>
+         
+    </div>
+</div>
+    
+    <div class="nexmoe-widget-wrap">
+    <div class="nexmoe-widget nexmoe-social">
+        <a class="mdui-ripple" href="https://jq.qq.com/?_wv=1027&k=5CfKHun" target="_blank" mdui-tooltip="{content: 'QQ群'}" style="color: rgb(249, 174, 8);background-color: rgba(249, 174, 8, .1);">
+            <i class="nexmoefont icon-QQ"></i>
+        </a><a class="mdui-ripple" href="https://space.bilibili.com/438182397" target="_blank" mdui-tooltip="{content: '哔哩哔哩'}" style="color: rgb(231, 106, 141);background-color: rgba(231, 106, 141, .15);">
+            <i class="nexmoefont icon-bilibili"></i>
+        </a><a class="mdui-ripple" href="https://github.com/hurry-hub" target="_blank" mdui-tooltip="{content: 'GitHub'}" style="color: rgb(25, 23, 23);background-color: rgba(25, 23, 23, .15);">
+            <i class="nexmoefont icon-github"></i>
+        </a>
+    </div>
+</div>
+    
+    
+  <div class="nexmoe-widget-wrap">
+    <h3 class="nexmoe-widget-title">Categories</h3>
+    <div class="nexmoe-widget">
+
+      <ul class="category-list">
+
+        
+
+
+        
+
+        
+
+        <li class="category-list-item">
+          <a class="category-list-link" href="/categories/cryptography/">cryptography</a>
+          <span class="category-list-count">3</span>
+        </li>
+
+        
+
+        <li class="category-list-item">
+          <a class="category-list-link" href="/categories/os/">os</a>
+          <span class="category-list-count">1</span>
+        </li>
+
+        
+
+        <li class="category-list-item">
+          <a class="category-list-link" href="/categories/sql/">sql</a>
+          <span class="category-list-count">2</span>
+        </li>
+
+        
+      </ul>
+
+    </div>
+  </div>
+
+
+    
+    
+  <div class="nexmoe-widget-wrap">
+    <div id="randomtagcloud" class="nexmoe-widget tagcloud nexmoe-rainbow">
+      <a href="/tags/%E5%AF%86%E7%A0%81%E5%AD%A6/" style="font-size: 20px;">密码学</a> <a href="/tags/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/" style="font-size: 10px;">操作系统</a> <a href="/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/" style="font-size: 15px;">数据库</a>
+    </div>
+    
+  </div>
+
+    
+</aside>
+    <div class="nexmoe-copyright">
+        &copy; 2022 Hurry Rechard
+        Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+        & <a href="https://github.com/theme-nexmoe/hexo-theme-nexmoe" target="_blank">Nexmoe</a>
+        
+    </div>
+</div><!-- .nexmoe-drawer -->
+    </div>
+    <div id="nexmoe-content">
+        <div class="nexmoe-primary">
+            <div class="nexmoe-post">
+
+  <article>
+      
+          <div class="nexmoe-post-cover" style="padding-bottom: NaN%;"> 
+              <img data-src="https://i.loli.net/2021/12/01/1EXBPbxzRJ6rKHN.jpg" data-sizes="auto" alt="分解为具有无损连接性和依赖保持性的3NF的方法以及例子" class="lazyload">
+              <h1>分解为具有无损连接性和依赖保持性的3NF的方法以及例子</h1>
+          </div>
+      
+      
+      <div class="nexmoe-post-meta nexmoe-rainbow" style="margin:10px 0!important;">
+    <a><i class="nexmoefont icon-calendar-fill"></i>2021年06月06日</a>
+    <a><i class="nexmoefont icon-areachart"></i>531 字</a>
+    <a><i class="nexmoefont icon-time-circle-fill"></i>大概 2 分钟</a>
+</div>
+
+      
+
+      <hr>
+<p>​    此篇为本人个人博客的第一篇，从博主个人的csdn搬运而来，关于数据库的3NF 分解问题。</p>
+<span id="more"></span>
+
+<h1 id="通用方法"><a href="#通用方法" class="headerlink" title="通用方法"></a>通用方法</h1><p>输入：关系模式R&lt;U, F&gt;<br>输出：具有无损连接性和函数依赖保持性的3NF分解ρ = {R1, R2, …, Rk}.</p>
+<p>方法：<br>(1)__最小化__。求F的最小函数依赖集Fm。<br>(2)__排除__。若Fm中存在X-&gt;A,使得XA = U，则R已是3NF，转(6)。<br>(3)__独立__。若R中某些属性未出现在Fm中任一函数依赖的左部或右部，则将它们从R中分出去，单独构成一个关系子模式。<br>(4)<strong>分组</strong>(<strong>相同左部原则</strong>)。对于Fm中的每一个X-&gt;A，都构成一个关系子模式XA(但若有X-&gt;A1, X-&gt;A2,…, X-&gt;An，可用合并规则便为X -&gt; A1A2…An作为ρ的一个子模式)。<br>    经过以上几步，求出函数依赖保持性分解：ρ = {R1, R2, …, Rk}。<br>(5)__添键__。若ρ中没有一个子模式含有R的候选键X，则令ρ = ρ ∪ {X}；若存在Ri包含于Rj(i ≠ j)，则删去Ri。<br>(6)__停止分解__，输出ρ。<br>此时ρ是既具有无损连接性又具有函数依赖保持性的3NF分解。</p>
+<h1 id="例子"><a href="#例子" class="headerlink" title="例子"></a>例子</h1><p>关系模式R(A, B, C, D, E, P, G, H, I, J)满足下列的函数依赖：{AB -&gt; E, ABE -&gt; GP, B -&gt; PI, C -&gt; J, CJ -&gt; I, G -&gt; H}。<br>(1)     求出最小函数依赖集Fm = {AB -&gt; E, AB -&gt; G, B -&gt; P, B -&gt; I, C -&gt; J, C -&gt; I, G -&gt; H}，候选键为ABCD。</p>
+<p>(2)不存在满足X-&gt;A,使得XA = U的依赖。</p>
+<p>(3)D未存在在任意一函数依赖中，故独立出去，R = R - {D} =<br>{A, B, C, E, P, G, H, I, J}。</p>
+<p>(4)由于AB -&gt; E, AB -&gt; G有相同左部，故合并为AB -&gt; EG，同理有B -&gt; PI, C -&gt; JI。</p>
+<p>(5)R中不含候选键ABCD，故添加ABCD进入。</p>
+<p>(6)输出**ρ = {ABEG, BPI, CJI, GH, ABCD}**，即为具有无损连接性和依赖保持性的3NF。</p>
+<p><a href="https://hurry-hub.github.io/2021/06/06/Fm/">最小函数依赖集Fm的定义，求法以及举例</a></p>
+
+  </article>
+
+  
+      
+    <div class="nexmoe-post-copyright">
+        <strong>Author：</strong>Hurry Rechard<br>
+        <strong>Link：</strong><a href="https://hurry-hub.github.io/2021/06/06/3NF/" title="https:&#x2F;&#x2F;hurry-hub.github.io&#x2F;2021&#x2F;06&#x2F;06&#x2F;3NF&#x2F;" target="_blank" rel="noopener">https:&#x2F;&#x2F;hurry-hub.github.io&#x2F;2021&#x2F;06&#x2F;06&#x2F;3NF&#x2F;</a><br>
+        
+            <strong>版权声明：</strong>本文采用 <a href="https://creativecommons.org/licenses/by-nc-sa/3.0/cn/deed.zh" target="_blank">CC BY-NC-SA 3.0 CN</a> 协议进行许可
+        
+    </div>
+
+
+  
+  
+  <div class="nexmoe-post-meta nexmoe-rainbow">
+    
+        <a class="nexmoefont icon-appstore-fill -link" href="/categories/sql/">sql</a>
+    
+    
+        <a class="nexmoefont icon-tag-fill -none-link" href="/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/" rel="tag">数据库</a>
+    
+</div>
+
+  
+      <div class="nexmoe-post-footer">
+          <section class="nexmoe-comment">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@latest/dist/gitalk.min.css">
+<div id="gitalk"></div>
+<script src="https://cdn.jsdelivr.net/npm/gitalk@latest/dist/gitalk.min.js"></script>
+<script type="text/javascript">
+    var gitalk = new Gitalk({
+        clientID: '37f200093d04e22cef87',
+        clientSecret: 'eca19b73fdc19551a488d42ae375334521108e27',
+        id: window.location.pathname,
+        repo: 'blogissue',
+        owner: 'hurry-hub',
+        admin: 'hurry-hub'
+    })
+    gitalk.render('gitalk')
+</script>
+</section>
+      </div>
+  
+</div>
+            <div class="nexmoe-post-right">
+              <div class="nexmoe-fixed">
+                  <div class="nexmoe-tool"> 
+                    
+                      
+                        
+                          
+                          
+                              <button class="mdui-fab catalog" style="overflow:unset;">
+                                  <i class="nexmoefont icon-i-catalog"></i>
+                                  <div class="nexmoe-toc">
+                                      <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E9%80%9A%E7%94%A8%E6%96%B9%E6%B3%95"><span class="toc-number">1.</span> <span class="toc-text">通用方法</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%BE%8B%E5%AD%90"><span class="toc-number">2.</span> <span class="toc-text">例子</span></a></li></ol>
+                                  </div>
+                              </button>
+                          
+                          
+                      
+                    
+                      <a href="#nexmoe-content" class="toc-link" aria-label="回到顶部" title="top"><button class="mdui-fab mdui-ripple"><i class="nexmoefont icon-caret-top"></i></button></a>
+                  </div>
+              </div>
+            </div>
+        </div>
+    </div>
+     
+    <div id="nexmoe-search-space">
+        <div class="search-container">
+            <div class="search-header">
+                <div class="search-input-container">
+                    <input class="search-input" type="text" placeholder="Search" oninput="sinput();">
+                </div>
+                <a class="search-close" onclick="sclose();">×</a>
+            </div>
+            <div class="search-body"></div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/combine/npm/lazysizes@5.1.0/lazysizes.min.js,npm/mdui@0.4.3/dist/js/mdui.min.js?v=1"></script>
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js"></script>
+
+ 
+
+<script async src="/js/app.js?v=1649861912811"></script>
+
+
+
+<script src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.8.1/dist/js/jquery.justifiedGallery.min.js"></script>
+<script>
+	$(".justified-gallery").justifiedGallery({
+		rowHeight: 160,
+		margins: 10,
+	});
+</script>
+
+<script>
+(function(){
+    var bp = document.createElement('script');
+    bp.src = '//push.zhanzhang.baidu.com/push.js';
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+    
+
+
+
+
+
+    <!-- baidu Analytics -->
+<script>
+    var _hmt = _hmt || [];
+    (function() {var hm = document.createElement('script');
+    hm.src = 'https://hm.baidu.com/hm.js?4aab437d77fe444e7670ae55f85effce#&lt;ID&gt;';
+    var s = document.getElementsByTagName('script')[0];
+        s.parentNode.insertBefore(hm, s);
+    })();
+</script>
+
+</body>
+
+</html>

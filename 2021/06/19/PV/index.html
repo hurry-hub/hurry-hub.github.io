@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+
+<html lang="zh-Hans">
+
+<head>
+    
+    <title>信号量相关问题典型案例 - Hurry Rechard&#39;s Blog</title>
+    <meta charset="UTF-8">
+    <meta name="keywords" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5">
+    
+    
+
+    <!-- Site Verification -->
+    <meta name="baidu-site-verification" content="code-k5HcBW1pgY" />
+
+    <link rel="shortcut icon" href="https://raw.githubusercontent.com/hurry-hub/blogimage/main/img/favicon.ico" type="image/x-icon" />
+    <meta name="description" content="此为博主从个人csdn博客搬运来的第三篇，内容关于操作系统中信号量的经典题目。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="信号量相关问题典型案例">
+<meta property="og:url" content="https://hurry-hub.github.io/2021/06/19/PV/index.html">
+<meta property="og:site_name" content="Hurry Rechard&#39;s Blog">
+<meta property="og:description" content="此为博主从个人csdn博客搬运来的第三篇，内容关于操作系统中信号量的经典题目。">
+<meta property="og:locale">
+<meta property="article:published_time" content="2021-06-19T12:12:31.000Z">
+<meta property="article:modified_time" content="2021-12-01T04:38:28.670Z">
+<meta property="article:author" content="Hurry Rechard">
+<meta property="article:tag" content="操作系统">
+<meta name="twitter:card" content="summary">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/combine/npm/highlight.js@9.15.8/styles/atom-one-dark.css,npm/justifiedGallery@3.8.1/dist/css/justifiedGallery.min.css,gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css,npm/hexo-theme-nexmoe@latest/source/lib/mdui_043tiny/css/mdui.css,npm/hexo-theme-nexmoe@latest/source/lib/iconfont/iconfont.css?v=233" crossorigin>
+    <link rel="stylesheet" href="/css/style.css?v=1649861912803">
+    
+        <link rel="stylesheet" href="/css/dark.css?v=1649861912803">
+     
+    
+    <link rel="stylesheet" href="/lib/iconfont/iconfont.css?v=1649861912803">
+    
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+<body class="mdui-drawer-body-left">
+    
+    <div id="nexmoe-background">
+        <div class="nexmoe-bg" style="background-image: url(https://raw.githubusercontent.com/hurry-hub/blogimage/main/img/ayase.png)"></div>
+        <div class="mdui-appbar mdui-shadow-0">
+            <div class="mdui-toolbar">
+                <a mdui-drawer="{target: '#drawer', swipe: true}" title="menu" class="mdui-btn mdui-btn-icon mdui-ripple"><i class="mdui-icon nexmoefont icon-menu"></i></a>
+                <div class="mdui-toolbar-spacer"></div>
+                <!--<a href="javascript:;" class="mdui-btn mdui-btn-icon"><i class="mdui-icon material-icons">search</i></a>-->
+                <a href="/" title="Hurry Rechard" class="mdui-btn mdui-btn-icon"><img src="https://raw.githubusercontent.com/hurry-hub/blogimage/main/img/violet%20a.bmp# 网站 Logo" alt="Hurry Rechard"></a>
+            </div>
+        </div>
+    </div>
+    <div id="nexmoe-header">
+        <div class="nexmoe-drawer mdui-drawer" id="drawer">
+    <div class="nexmoe-avatar mdui-ripple">
+        <a href="/" title="Hurry Rechard">
+            <img src="https://raw.githubusercontent.com/hurry-hub/blogimage/main/img/violet%20a.bmp# 网站 Logo" alt="Hurry Rechard" alt="Hurry Rechard">
+        </a>
+    </div>
+    <div class="nexmoe-count">
+        <div><span>Articles</span>6</div>
+        <div><span>Tags</span>3</div>
+        <div><span>Categories</span>3</div>
+    </div>
+    <div class="nexmoe-list mdui-list" mdui-collapse="{accordion: true}">
+        
+        <a class="nexmoe-list-item mdui-list-item mdui-ripple false" href="/" title="回到首页">
+            <i class="mdui-list-item-icon nexmoefont icon-home"></i>
+            <div class="mdui-list-item-content">
+                回到首页
+            </div>
+        </a>
+        
+        <a class="nexmoe-list-item mdui-list-item mdui-ripple false" href="/archives.html" title="文章归档">
+            <i class="mdui-list-item-icon nexmoefont icon-container"></i>
+            <div class="mdui-list-item-content">
+                文章归档
+            </div>
+        </a>
+        
+        <a class="nexmoe-list-item mdui-list-item mdui-ripple false" href="/about.html" title="关于博客">
+            <i class="mdui-list-item-icon nexmoefont icon-info-circle"></i>
+            <div class="mdui-list-item-content">
+                关于博客
+            </div>
+        </a>
+        
+        <a class="nexmoe-list-item mdui-list-item mdui-ripple false" href="/py.html" title="我的朋友">
+            <i class="mdui-list-item-icon nexmoefont icon-unorderedlist"></i>
+            <div class="mdui-list-item-content">
+                我的朋友
+            </div>
+        </a>
+        
+    </div>
+    <aside id="nexmoe-sidebar">
+    
+    <div class="nexmoe-widget-wrap">
+    <div class="nexmoe-widget nexmoe-search">
+         
+            <form id="search_form" action_e="https://cn.bing.com/search?q=site:hurry-hub.github.io" onsubmit="return search();">
+                <label><input id="search_value" name="q" type="search" placeholder="Search"></label>
+            </form>
+         
+    </div>
+</div>
+    
+    <div class="nexmoe-widget-wrap">
+    <div class="nexmoe-widget nexmoe-social">
+        <a class="mdui-ripple" href="https://jq.qq.com/?_wv=1027&k=5CfKHun" target="_blank" mdui-tooltip="{content: 'QQ群'}" style="color: rgb(249, 174, 8);background-color: rgba(249, 174, 8, .1);">
+            <i class="nexmoefont icon-QQ"></i>
+        </a><a class="mdui-ripple" href="https://space.bilibili.com/438182397" target="_blank" mdui-tooltip="{content: '哔哩哔哩'}" style="color: rgb(231, 106, 141);background-color: rgba(231, 106, 141, .15);">
+            <i class="nexmoefont icon-bilibili"></i>
+        </a><a class="mdui-ripple" href="https://github.com/hurry-hub" target="_blank" mdui-tooltip="{content: 'GitHub'}" style="color: rgb(25, 23, 23);background-color: rgba(25, 23, 23, .15);">
+            <i class="nexmoefont icon-github"></i>
+        </a>
+    </div>
+</div>
+    
+    
+  <div class="nexmoe-widget-wrap">
+    <h3 class="nexmoe-widget-title">Categories</h3>
+    <div class="nexmoe-widget">
+
+      <ul class="category-list">
+
+        
+
+
+        
+
+        
+
+        <li class="category-list-item">
+          <a class="category-list-link" href="/categories/cryptography/">cryptography</a>
+          <span class="category-list-count">3</span>
+        </li>
+
+        
+
+        <li class="category-list-item">
+          <a class="category-list-link" href="/categories/os/">os</a>
+          <span class="category-list-count">1</span>
+        </li>
+
+        
+
+        <li class="category-list-item">
+          <a class="category-list-link" href="/categories/sql/">sql</a>
+          <span class="category-list-count">2</span>
+        </li>
+
+        
+      </ul>
+
+    </div>
+  </div>
+
+
+    
+    
+  <div class="nexmoe-widget-wrap">
+    <div id="randomtagcloud" class="nexmoe-widget tagcloud nexmoe-rainbow">
+      <a href="/tags/%E5%AF%86%E7%A0%81%E5%AD%A6/" style="font-size: 20px;">密码学</a> <a href="/tags/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/" style="font-size: 10px;">操作系统</a> <a href="/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/" style="font-size: 15px;">数据库</a>
+    </div>
+    
+  </div>
+
+    
+</aside>
+    <div class="nexmoe-copyright">
+        &copy; 2022 Hurry Rechard
+        Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+        & <a href="https://github.com/theme-nexmoe/hexo-theme-nexmoe" target="_blank">Nexmoe</a>
+        
+    </div>
+</div><!-- .nexmoe-drawer -->
+    </div>
+    <div id="nexmoe-content">
+        <div class="nexmoe-primary">
+            <div class="nexmoe-post">
+
+  <article>
+      
+          <div class="nexmoe-post-cover" style="padding-bottom: NaN%;"> 
+              <img data-src="https://raw.githubusercontent.com/hurry-hub/blogimage/main/img/April.jpg" data-sizes="auto" alt="信号量相关问题典型案例" class="lazyload">
+              <h1>信号量相关问题典型案例</h1>
+          </div>
+      
+      
+      <div class="nexmoe-post-meta nexmoe-rainbow" style="margin:10px 0!important;">
+    <a><i class="nexmoefont icon-calendar-fill"></i>2021年06月19日</a>
+    <a><i class="nexmoefont icon-areachart"></i>842 字</a>
+    <a><i class="nexmoefont icon-time-circle-fill"></i>大概 3 分钟</a>
+</div>
+
+      
+
+      <hr>
+<p>此为博主从个人csdn博客搬运来的第三篇，内容关于操作系统中信号量的经典题目。</p>
+<span id="more"></span>
+
+<h1 id="题干"><a href="#题干" class="headerlink" title="题干"></a>题干</h1><h2 id="类读者写者问题"><a href="#类读者写者问题" class="headerlink" title="类读者写者问题"></a>类读者写者问题</h2><p> 有P1、P2、P3三类进程共享同一表格F，其中P1对F只读不写，P2对F只写不读，P3对F先读后写。不同进程可同时读F，但如果有进程写时，其余进程不能读或写。请用信号量以及P、V操作给出解决方案，并做一定分析。</p>
+<h2 id="理发师问题"><a href="#理发师问题" class="headerlink" title="理发师问题"></a>理发师问题</h2><p> 理发店中有一位理发师，一把理发椅，N个候坐用的凳子。若无顾客，则理发师睡觉，且第一个顾客到来时叫醒理发师；若理发师正理发时有顾客到店，有空凳子就坐下，没有就离开。请用信号量以及P、V操作给出解决方案。</p>
+<h1 id="解法"><a href="#解法" class="headerlink" title="解法"></a>解法</h1><h2 id="类读者写者问题-1"><a href="#类读者写者问题-1" class="headerlink" title="类读者写者问题"></a>类读者写者问题</h2><p>简要分析：这是典型的读者写者问题，P1相当于读者，P2为写者，P3则是先读者后写者的角色。(本解答只是其中两种较简单的解法)</p>
+<p>作答：</p>
+<h3 id="解法一"><a href="#解法一" class="headerlink" title="解法一"></a>解法一</h3><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 设置信号量以及相关参数</span></span><br><span class="line">semaphore w = <span class="number">1</span>;			<span class="comment">//用以保持读者写者、写者写者互斥</span></span><br><span class="line">semaphore mutex = <span class="number">1</span>;		<span class="comment">//用以互斥访问count</span></span><br><span class="line">int count = <span class="number">0</span>;				<span class="comment">//用以记录当前读者数</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="title">P1</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">	<span class="keyword">while</span>(<span class="number">1</span>) &#123;</span><br><span class="line">		P(mutex);</span><br><span class="line">		<span class="keyword">if</span> (count == <span class="number">0</span>) P(w);</span><br><span class="line">		count++;</span><br><span class="line">		V(mutex);</span><br><span class="line">		reading...</span><br><span class="line">		P(mutex);</span><br><span class="line">		count--;</span><br><span class="line">		<span class="keyword">if</span> (count == <span class="number">0</span>) V(w);</span><br><span class="line">		V(mutex);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="title">P2</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">	<span class="keyword">while</span>(<span class="number">1</span>) &#123;</span><br><span class="line">		P(w);</span><br><span class="line">		writing...</span><br><span class="line">		V(w);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="title">P3</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">	<span class="keyword">while</span>(<span class="number">1</span>) &#123;</span><br><span class="line">		P(mutex);</span><br><span class="line">		<span class="keyword">if</span> (count == <span class="number">0</span>) P(w);</span><br><span class="line">		count++;</span><br><span class="line">		V(mutex);</span><br><span class="line">		reading...</span><br><span class="line">		P(mutex);</span><br><span class="line">		count--;</span><br><span class="line">		<span class="keyword">if</span> (count == <span class="number">0</span>) V(w);</span><br><span class="line">		V(mutex);</span><br><span class="line">		P(w);</span><br><span class="line">		writing...</span><br><span class="line">		V(w);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>简要分析：此解法满足读者优先的策略，因为一旦有读者进程进入便可抢占插入到写者进程之前。</p>
+<h3 id="解法二"><a href="#解法二" class="headerlink" title="解法二"></a>解法二</h3><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 设置信号量以及相关参数</span></span><br><span class="line">semaphore rw = <span class="number">1</span>;			<span class="comment">//用以保持读者写者、写者写者互斥</span></span><br><span class="line">semaphore w = <span class="number">1</span>;			<span class="comment">//用以实现读写公平</span></span><br><span class="line">semaphore mutex = <span class="number">1</span>;		<span class="comment">//用以互斥访问count</span></span><br><span class="line">int count = <span class="number">0</span>;				<span class="comment">//用以记录当前读者数</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="title">P1</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">	<span class="keyword">while</span>(<span class="number">1</span>) &#123;</span><br><span class="line">		P(w);</span><br><span class="line">		P(mutex);</span><br><span class="line">		<span class="keyword">if</span> (count == <span class="number">0</span>) P(rw);</span><br><span class="line">		count++;</span><br><span class="line">		V(mutex);</span><br><span class="line">		V(w);</span><br><span class="line">		reading...</span><br><span class="line">		P(mutex);</span><br><span class="line">		count--;</span><br><span class="line">		<span class="keyword">if</span> (count == <span class="number">0</span>) V(rw);</span><br><span class="line">		V(mutex);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="title">P2</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">	<span class="keyword">while</span>(<span class="number">1</span>) &#123;</span><br><span class="line">		P(w);</span><br><span class="line">		P(rw);</span><br><span class="line">		writing...</span><br><span class="line">		V(rw);</span><br><span class="line">		V(w);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="title">P3</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">	<span class="keyword">while</span>(<span class="number">1</span>) &#123;</span><br><span class="line">		P(mutex);</span><br><span class="line">		<span class="keyword">if</span> (count == <span class="number">0</span>) P(w);</span><br><span class="line">		count++;</span><br><span class="line">		V(mutex);</span><br><span class="line">		reading...</span><br><span class="line">		P(mutex);</span><br><span class="line">		<span class="keyword">if</span> (count == <span class="number">0</span>) V(w);</span><br><span class="line">		count--;</span><br><span class="line">		V(mutex);</span><br><span class="line">		P(w);</span><br><span class="line">		P(rw);</span><br><span class="line">		writing...</span><br><span class="line">		V(rw);</span><br><span class="line">		V(w);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>简要分析：此解法可实现较为公平的读写，因为此解法遵循先来先服务的原则。</p>
+<h2 id="理发师问题-1"><a href="#理发师问题-1" class="headerlink" title="理发师问题"></a>理发师问题</h2><p>对于理发师问题，可设置三个信号量加以解决</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">semaphore mutex = <span class="number">1</span>;			<span class="comment">//用于互斥访问count</span></span><br><span class="line">semaphore barber = <span class="number">0</span>;			<span class="comment">//可理解为可用的理发师资源(清醒时)</span></span><br><span class="line">semaphore customer = <span class="number">0</span>;			<span class="comment">//可理解为等待理发的顾客</span></span><br><span class="line">int count = <span class="number">0</span>;					<span class="comment">//相当于customer的计数</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="title">Barber</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">	<span class="keyword">while</span>(<span class="number">1</span>) &#123;</span><br><span class="line">		P(customer);		<span class="comment">//等候顾客，即睡觉</span></span><br><span class="line">		P(mutex);			<span class="comment">//有顾客，进入临界区</span></span><br><span class="line">		count--;</span><br><span class="line">		V(barber);			<span class="comment">//可理解为释放一个理发师资源</span></span><br><span class="line">		V(mutex);			<span class="comment">//退出临界区</span></span><br><span class="line">		理发……</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="title">Customer</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">	P(mutex);				<span class="comment">//有顾客来，进入临界区</span></span><br><span class="line">	<span class="keyword">if</span> (count &lt; N) &#123;		<span class="comment">//若有空位置则坐下</span></span><br><span class="line">		count++;			<span class="comment">//等待顾客数加一</span></span><br><span class="line">		V(customer);		<span class="comment">//唤醒理发师</span></span><br><span class="line">		V(mutex);			<span class="comment">//退出临界区</span></span><br><span class="line">		P(barber);			<span class="comment">//可理解为申请一个理发师资源</span></span><br><span class="line">		理发……</span><br><span class="line">	&#125; <span class="keyword">else</span> &#123;				<span class="comment">//没位置顾客离开理发店，退出临界区</span></span><br><span class="line">		V(mutex);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+  </article>
+
+  
+      
+    <div class="nexmoe-post-copyright">
+        <strong>Author：</strong>Hurry Rechard<br>
+        <strong>Link：</strong><a href="https://hurry-hub.github.io/2021/06/19/PV/" title="https:&#x2F;&#x2F;hurry-hub.github.io&#x2F;2021&#x2F;06&#x2F;19&#x2F;PV&#x2F;" target="_blank" rel="noopener">https:&#x2F;&#x2F;hurry-hub.github.io&#x2F;2021&#x2F;06&#x2F;19&#x2F;PV&#x2F;</a><br>
+        
+            <strong>版权声明：</strong>本文采用 <a href="https://creativecommons.org/licenses/by-nc-sa/3.0/cn/deed.zh" target="_blank">CC BY-NC-SA 3.0 CN</a> 协议进行许可
+        
+    </div>
+
+
+  
+  
+  <div class="nexmoe-post-meta nexmoe-rainbow">
+    
+        <a class="nexmoefont icon-appstore-fill -link" href="/categories/os/">os</a>
+    
+    
+        <a class="nexmoefont icon-tag-fill -none-link" href="/tags/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/" rel="tag">操作系统</a>
+    
+</div>
+
+  
+      <div class="nexmoe-post-footer">
+          <section class="nexmoe-comment">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@latest/dist/gitalk.min.css">
+<div id="gitalk"></div>
+<script src="https://cdn.jsdelivr.net/npm/gitalk@latest/dist/gitalk.min.js"></script>
+<script type="text/javascript">
+    var gitalk = new Gitalk({
+        clientID: '37f200093d04e22cef87',
+        clientSecret: 'eca19b73fdc19551a488d42ae375334521108e27',
+        id: window.location.pathname,
+        repo: 'blogissue',
+        owner: 'hurry-hub',
+        admin: 'hurry-hub'
+    })
+    gitalk.render('gitalk')
+</script>
+</section>
+      </div>
+  
+</div>
+            <div class="nexmoe-post-right">
+              <div class="nexmoe-fixed">
+                  <div class="nexmoe-tool"> 
+                    
+                      
+                        
+                          
+                          
+                              <button class="mdui-fab catalog" style="overflow:unset;">
+                                  <i class="nexmoefont icon-i-catalog"></i>
+                                  <div class="nexmoe-toc">
+                                      <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E9%A2%98%E5%B9%B2"><span class="toc-number">1.</span> <span class="toc-text">题干</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%B1%BB%E8%AF%BB%E8%80%85%E5%86%99%E8%80%85%E9%97%AE%E9%A2%98"><span class="toc-number">1.1.</span> <span class="toc-text">类读者写者问题</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%90%86%E5%8F%91%E5%B8%88%E9%97%AE%E9%A2%98"><span class="toc-number">1.2.</span> <span class="toc-text">理发师问题</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E8%A7%A3%E6%B3%95"><span class="toc-number">2.</span> <span class="toc-text">解法</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%B1%BB%E8%AF%BB%E8%80%85%E5%86%99%E8%80%85%E9%97%AE%E9%A2%98-1"><span class="toc-number">2.1.</span> <span class="toc-text">类读者写者问题</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%A7%A3%E6%B3%95%E4%B8%80"><span class="toc-number">2.1.1.</span> <span class="toc-text">解法一</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%A7%A3%E6%B3%95%E4%BA%8C"><span class="toc-number">2.1.2.</span> <span class="toc-text">解法二</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%90%86%E5%8F%91%E5%B8%88%E9%97%AE%E9%A2%98-1"><span class="toc-number">2.2.</span> <span class="toc-text">理发师问题</span></a></li></ol></li></ol>
+                                  </div>
+                              </button>
+                          
+                          
+                      
+                    
+                      <a href="#nexmoe-content" class="toc-link" aria-label="回到顶部" title="top"><button class="mdui-fab mdui-ripple"><i class="nexmoefont icon-caret-top"></i></button></a>
+                  </div>
+              </div>
+            </div>
+        </div>
+    </div>
+     
+    <div id="nexmoe-search-space">
+        <div class="search-container">
+            <div class="search-header">
+                <div class="search-input-container">
+                    <input class="search-input" type="text" placeholder="Search" oninput="sinput();">
+                </div>
+                <a class="search-close" onclick="sclose();">×</a>
+            </div>
+            <div class="search-body"></div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/combine/npm/lazysizes@5.1.0/lazysizes.min.js,npm/mdui@0.4.3/dist/js/mdui.min.js?v=1"></script>
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js"></script>
+
+ 
+
+<script async src="/js/app.js?v=1649861912808"></script>
+
+
+
+<script src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.8.1/dist/js/jquery.justifiedGallery.min.js"></script>
+<script>
+	$(".justified-gallery").justifiedGallery({
+		rowHeight: 160,
+		margins: 10,
+	});
+</script>
+
+<script>
+(function(){
+    var bp = document.createElement('script');
+    bp.src = '//push.zhanzhang.baidu.com/push.js';
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+    
+
+
+
+
+
+    <!-- baidu Analytics -->
+<script>
+    var _hmt = _hmt || [];
+    (function() {var hm = document.createElement('script');
+    hm.src = 'https://hm.baidu.com/hm.js?4aab437d77fe444e7670ae55f85effce#&lt;ID&gt;';
+    var s = document.getElementsByTagName('script')[0];
+        s.parentNode.insertBefore(hm, s);
+    })();
+</script>
+
+</body>
+
+</html>

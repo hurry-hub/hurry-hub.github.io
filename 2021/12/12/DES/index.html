@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+
+<html lang="zh-Hans">
+
+<head>
+    
+    <title>64位DES算法及其测速与原理验证 - Hurry Rechard&#39;s Blog</title>
+    <meta charset="UTF-8">
+    <meta name="keywords" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5">
+    
+    
+
+    <!-- Site Verification -->
+    <meta name="baidu-site-verification" content="code-k5HcBW1pgY" />
+
+    <link rel="shortcut icon" href="https://raw.githubusercontent.com/hurry-hub/blogimage/main/img/favicon.ico" type="image/x-icon" />
+    <meta name="description" content="此为博主在学习密码学课程时编写的作业，有关DES算法及其效果验证。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="64位DES算法及其测速与原理验证">
+<meta property="og:url" content="https://hurry-hub.github.io/2021/12/12/DES/index.html">
+<meta property="og:site_name" content="Hurry Rechard&#39;s Blog">
+<meta property="og:description" content="此为博主在学习密码学课程时编写的作业，有关DES算法及其效果验证。">
+<meta property="og:locale">
+<meta property="og:image" content="https://s2.loli.net/2021/12/11/OATNKltjbcJaqMn.png">
+<meta property="og:image" content="https://s2.loli.net/2021/12/12/kzpP2KX8yBfujlb.png">
+<meta property="og:image" content="https://s2.loli.net/2021/12/12/5JLhBqwcaskubZg.png">
+<meta property="article:published_time" content="2021-12-12T09:38:34.000Z">
+<meta property="article:modified_time" content="2021-12-21T09:06:54.797Z">
+<meta property="article:author" content="Hurry Rechard">
+<meta property="article:tag" content="密码学">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://s2.loli.net/2021/12/11/OATNKltjbcJaqMn.png">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/combine/npm/highlight.js@9.15.8/styles/atom-one-dark.css,npm/justifiedGallery@3.8.1/dist/css/justifiedGallery.min.css,gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css,npm/hexo-theme-nexmoe@latest/source/lib/mdui_043tiny/css/mdui.css,npm/hexo-theme-nexmoe@latest/source/lib/iconfont/iconfont.css?v=233" crossorigin>
+    <link rel="stylesheet" href="/css/style.css?v=1649861912774">
+    
+        <link rel="stylesheet" href="/css/dark.css?v=1649861912774">
+     
+    
+    <link rel="stylesheet" href="/lib/iconfont/iconfont.css?v=1649861912774">
+    
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+<body class="mdui-drawer-body-left">
+    
+    <div id="nexmoe-background">
+        <div class="nexmoe-bg" style="background-image: url(https://raw.githubusercontent.com/hurry-hub/blogimage/main/img/ayase.png)"></div>
+        <div class="mdui-appbar mdui-shadow-0">
+            <div class="mdui-toolbar">
+                <a mdui-drawer="{target: '#drawer', swipe: true}" title="menu" class="mdui-btn mdui-btn-icon mdui-ripple"><i class="mdui-icon nexmoefont icon-menu"></i></a>
+                <div class="mdui-toolbar-spacer"></div>
+                <!--<a href="javascript:;" class="mdui-btn mdui-btn-icon"><i class="mdui-icon material-icons">search</i></a>-->
+                <a href="/" title="Hurry Rechard" class="mdui-btn mdui-btn-icon"><img src="https://raw.githubusercontent.com/hurry-hub/blogimage/main/img/violet%20a.bmp# 网站 Logo" alt="Hurry Rechard"></a>
+            </div>
+        </div>
+    </div>
+    <div id="nexmoe-header">
+        <div class="nexmoe-drawer mdui-drawer" id="drawer">
+    <div class="nexmoe-avatar mdui-ripple">
+        <a href="/" title="Hurry Rechard">
+            <img src="https://raw.githubusercontent.com/hurry-hub/blogimage/main/img/violet%20a.bmp# 网站 Logo" alt="Hurry Rechard" alt="Hurry Rechard">
+        </a>
+    </div>
+    <div class="nexmoe-count">
+        <div><span>Articles</span>6</div>
+        <div><span>Tags</span>3</div>
+        <div><span>Categories</span>3</div>
+    </div>
+    <div class="nexmoe-list mdui-list" mdui-collapse="{accordion: true}">
+        
+        <a class="nexmoe-list-item mdui-list-item mdui-ripple false" href="/" title="回到首页">
+            <i class="mdui-list-item-icon nexmoefont icon-home"></i>
+            <div class="mdui-list-item-content">
+                回到首页
+            </div>
+        </a>
+        
+        <a class="nexmoe-list-item mdui-list-item mdui-ripple false" href="/archives.html" title="文章归档">
+            <i class="mdui-list-item-icon nexmoefont icon-container"></i>
+            <div class="mdui-list-item-content">
+                文章归档
+            </div>
+        </a>
+        
+        <a class="nexmoe-list-item mdui-list-item mdui-ripple false" href="/about.html" title="关于博客">
+            <i class="mdui-list-item-icon nexmoefont icon-info-circle"></i>
+            <div class="mdui-list-item-content">
+                关于博客
+            </div>
+        </a>
+        
+        <a class="nexmoe-list-item mdui-list-item mdui-ripple false" href="/py.html" title="我的朋友">
+            <i class="mdui-list-item-icon nexmoefont icon-unorderedlist"></i>
+            <div class="mdui-list-item-content">
+                我的朋友
+            </div>
+        </a>
+        
+    </div>
+    <aside id="nexmoe-sidebar">
+    
+    <div class="nexmoe-widget-wrap">
+    <div class="nexmoe-widget nexmoe-search">
+         
+            <form id="search_form" action_e="https://cn.bing.com/search?q=site:hurry-hub.github.io" onsubmit="return search();">
+                <label><input id="search_value" name="q" type="search" placeholder="Search"></label>
+            </form>
+         
+    </div>
+</div>
+    
+    <div class="nexmoe-widget-wrap">
+    <div class="nexmoe-widget nexmoe-social">
+        <a class="mdui-ripple" href="https://jq.qq.com/?_wv=1027&k=5CfKHun" target="_blank" mdui-tooltip="{content: 'QQ群'}" style="color: rgb(249, 174, 8);background-color: rgba(249, 174, 8, .1);">
+            <i class="nexmoefont icon-QQ"></i>
+        </a><a class="mdui-ripple" href="https://space.bilibili.com/438182397" target="_blank" mdui-tooltip="{content: '哔哩哔哩'}" style="color: rgb(231, 106, 141);background-color: rgba(231, 106, 141, .15);">
+            <i class="nexmoefont icon-bilibili"></i>
+        </a><a class="mdui-ripple" href="https://github.com/hurry-hub" target="_blank" mdui-tooltip="{content: 'GitHub'}" style="color: rgb(25, 23, 23);background-color: rgba(25, 23, 23, .15);">
+            <i class="nexmoefont icon-github"></i>
+        </a>
+    </div>
+</div>
+    
+    
+  <div class="nexmoe-widget-wrap">
+    <h3 class="nexmoe-widget-title">Categories</h3>
+    <div class="nexmoe-widget">
+
+      <ul class="category-list">
+
+        
+
+
+        
+
+        
+
+        <li class="category-list-item">
+          <a class="category-list-link" href="/categories/cryptography/">cryptography</a>
+          <span class="category-list-count">3</span>
+        </li>
+
+        
+
+        <li class="category-list-item">
+          <a class="category-list-link" href="/categories/os/">os</a>
+          <span class="category-list-count">1</span>
+        </li>
+
+        
+
+        <li class="category-list-item">
+          <a class="category-list-link" href="/categories/sql/">sql</a>
+          <span class="category-list-count">2</span>
+        </li>
+
+        
+      </ul>
+
+    </div>
+  </div>
+
+
+    
+    
+  <div class="nexmoe-widget-wrap">
+    <div id="randomtagcloud" class="nexmoe-widget tagcloud nexmoe-rainbow">
+      <a href="/tags/%E5%AF%86%E7%A0%81%E5%AD%A6/" style="font-size: 20px;">密码学</a> <a href="/tags/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/" style="font-size: 10px;">操作系统</a> <a href="/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/" style="font-size: 15px;">数据库</a>
+    </div>
+    
+  </div>
+
+    
+</aside>
+    <div class="nexmoe-copyright">
+        &copy; 2022 Hurry Rechard
+        Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+        & <a href="https://github.com/theme-nexmoe/hexo-theme-nexmoe" target="_blank">Nexmoe</a>
+        
+    </div>
+</div><!-- .nexmoe-drawer -->
+    </div>
+    <div id="nexmoe-content">
+        <div class="nexmoe-primary">
+            <div class="nexmoe-post">
+
+  <article>
+      
+          <div class="nexmoe-post-cover" style="padding-bottom: NaN%;"> 
+              <img data-src="https://raw.githubusercontent.com/hurry-hub/blogimage/main/img/thunder.jpg" data-sizes="auto" alt="64位DES算法及其测速与原理验证" class="lazyload">
+              <h1>64位DES算法及其测速与原理验证</h1>
+          </div>
+      
+      
+      <div class="nexmoe-post-meta nexmoe-rainbow" style="margin:10px 0!important;">
+    <a><i class="nexmoefont icon-calendar-fill"></i>2021年12月12日</a>
+    <a><i class="nexmoefont icon-areachart"></i>2.4k 字</a>
+    <a><i class="nexmoefont icon-time-circle-fill"></i>大概 12 分钟</a>
+</div>
+
+      
+
+      <hr>
+<p>此为博主在学习密码学课程时编写的作业，有关DES算法及其效果验证。</p>
+<span id="more"></span>
+
+<h1 id="64位DES算法"><a href="#64位DES算法" class="headerlink" title="64位DES算法"></a>64位DES算法</h1><h2 id="基本原理"><a href="#基本原理" class="headerlink" title="基本原理"></a>基本原理</h2><h3 id="1-输入输出参数"><a href="#1-输入输出参数" class="headerlink" title="1 输入输出参数"></a>1 输入输出参数</h3><p><strong>key</strong>: 64bit的密钥</p>
+<p><strong>message</strong>：64bit的需要加密的信息，即明文</p>
+<p><strong>cipher</strong>：64bit的已经被加密过的信息，即密文</p>
+<h3 id="2-流程"><a href="#2-流程" class="headerlink" title="2 流程"></a>2 流程</h3><h4 id="2-1-子密钥产生"><a href="#2-1-子密钥产生" class="headerlink" title="2.1 子密钥产生"></a>2.1 子密钥产生</h4><p>​        <strong>DES</strong>算法由64位密钥产生16轮的48位子密钥。在每一轮的迭代过程中，使用不同的子密钥。</p>
+<p>a、把密钥的奇偶校验位忽略不参与计算，即每个字节的第8位，将64位密钥降至56位，然后根据选择置换 <strong>PC-1</strong> 将这56位分成两块 <strong>C0</strong> (28位)和 <strong>D0</strong> (28位)；</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">char</span> PC1_Table[<span class="number">56</span>] = &#123;</span><br><span class="line">	<span class="number">57</span>, <span class="number">49</span>, <span class="number">41</span>, <span class="number">33</span>, <span class="number">25</span>, <span class="number">17</span>,  <span class="number">9</span>,  <span class="number">1</span>, <span class="number">58</span>, <span class="number">50</span>, <span class="number">42</span>, <span class="number">34</span>, <span class="number">26</span>, <span class="number">18</span>, </span><br><span class="line">	<span class="number">10</span>,  <span class="number">2</span>, <span class="number">59</span>, <span class="number">51</span>, <span class="number">43</span>, <span class="number">35</span>, <span class="number">27</span>, <span class="number">19</span>, <span class="number">11</span>,  <span class="number">3</span>, <span class="number">60</span>, <span class="number">52</span>, <span class="number">44</span>, <span class="number">36</span>, </span><br><span class="line">	<span class="number">63</span>, <span class="number">55</span>, <span class="number">47</span>, <span class="number">39</span>, <span class="number">31</span>, <span class="number">23</span>, <span class="number">15</span>,  <span class="number">7</span>, <span class="number">62</span>, <span class="number">54</span>, <span class="number">46</span>, <span class="number">38</span>, <span class="number">30</span>, <span class="number">22</span>, </span><br><span class="line">	<span class="number">14</span>,  <span class="number">6</span>, <span class="number">61</span>, <span class="number">53</span>, <span class="number">45</span>, <span class="number">37</span>, <span class="number">29</span>, <span class="number">21</span>, <span class="number">13</span>,  <span class="number">5</span>, <span class="number">28</span>, <span class="number">20</span>, <span class="number">12</span>,  <span class="number">4</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>b、将 <strong>C0</strong> 和 <strong>D0</strong> 进行循环左移变化(注：每轮循环左移的位数由轮数决定)，变换后生成 <strong>C1</strong> 和 <strong>D1</strong> ，然后 <strong>C1</strong> 和 <strong>D1</strong> 合并，并通过选择置换 <strong>PC-2</strong> 生成子密钥 <strong>K1</strong> (48位)；</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">char</span> Move_Table[<span class="number">16</span>] = &#123;</span><br><span class="line">	<span class="number">1</span>,  <span class="number">1</span>,  <span class="number">2</span>,  <span class="number">2</span>,  <span class="number">2</span>,  <span class="number">2</span>,  <span class="number">2</span>,  <span class="number">2</span>,  <span class="number">1</span>,  <span class="number">2</span>,  <span class="number">2</span>,  <span class="number">2</span>,  <span class="number">2</span>,  <span class="number">2</span>,  <span class="number">2</span>,  <span class="number">1</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>c、 <strong>C1</strong> 和 <strong>D1</strong> 在次经过循环左移变换，生成 <strong>C2</strong> 和 <strong>D2</strong> ，然后 <strong>C2</strong> 和 <strong>D2</strong> 合并，通过选择置换 <strong>PC-2</strong> 生成密钥 <strong>K2</strong> (48位)；</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">char</span> PC2_Table[<span class="number">48</span>] = &#123;</span><br><span class="line">	<span class="number">14</span>, <span class="number">17</span>, <span class="number">11</span>, <span class="number">24</span>,  <span class="number">1</span>,  <span class="number">5</span>,  <span class="number">3</span>, <span class="number">28</span>, <span class="number">15</span>,  <span class="number">6</span>, <span class="number">21</span>, <span class="number">10</span>, </span><br><span class="line">	<span class="number">23</span>, <span class="number">19</span>, <span class="number">12</span>,  <span class="number">4</span>, <span class="number">26</span>,  <span class="number">8</span>, <span class="number">16</span>,  <span class="number">7</span>, <span class="number">27</span>, <span class="number">20</span>, <span class="number">13</span>,  <span class="number">2</span>, </span><br><span class="line">	<span class="number">41</span>, <span class="number">52</span>, <span class="number">31</span>, <span class="number">37</span>, <span class="number">47</span>, <span class="number">55</span>, <span class="number">30</span>, <span class="number">40</span>, <span class="number">51</span>, <span class="number">45</span>, <span class="number">33</span>, <span class="number">48</span>, </span><br><span class="line">	<span class="number">44</span>, <span class="number">49</span>, <span class="number">39</span>, <span class="number">56</span>, <span class="number">34</span>, <span class="number">53</span>, <span class="number">46</span>, <span class="number">42</span>, <span class="number">50</span>, <span class="number">36</span>, <span class="number">29</span>, <span class="number">32</span> </span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>d、以此类推，得到 <strong>K16</strong> (48位)。但是最后一轮的左右两部分不交换，而是直接合并在一起 <strong>R16L16</strong> ，作为逆置换的输入块。其中循环左移的位数一共是循环左移16次，其中第一次、第二次、第九次、第十六次是循环左移一位，其他都是左移两位。</p>
+<h4 id="2-2-初始置换-IP"><a href="#2-2-初始置换-IP" class="headerlink" title="2.2 初始置换 IP"></a>2.2 初始置换 IP</h4><p>​        初始置换 <strong>IP</strong> 是 <strong>DES</strong> 的第一步密码变换，作用是将64位明文打乱重排并分成左右两半，左边32位作为 <strong>L0</strong> ，右边32位作为 <strong>R0</strong> ，供之后的加密迭代使用。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> <span class="keyword">char</span> IP_Table[<span class="number">64</span>] = &#123;             </span><br><span class="line">	<span class="number">58</span>, <span class="number">50</span>, <span class="number">42</span>, <span class="number">34</span>, <span class="number">26</span>, <span class="number">18</span>, <span class="number">10</span>,  <span class="number">2</span>, <span class="number">60</span>, <span class="number">52</span>, <span class="number">44</span>, <span class="number">36</span>, <span class="number">28</span>, <span class="number">20</span>, <span class="number">12</span>,  <span class="number">4</span>, </span><br><span class="line">	<span class="number">62</span>, <span class="number">54</span>, <span class="number">46</span>, <span class="number">38</span>, <span class="number">30</span>, <span class="number">22</span>, <span class="number">14</span>,  <span class="number">6</span>, <span class="number">64</span>, <span class="number">56</span>, <span class="number">48</span>, <span class="number">40</span>, <span class="number">32</span>, <span class="number">24</span>, <span class="number">16</span>,  <span class="number">8</span>, </span><br><span class="line">	<span class="number">57</span>, <span class="number">49</span>, <span class="number">41</span>, <span class="number">33</span>, <span class="number">25</span>, <span class="number">17</span>,  <span class="number">9</span>,  <span class="number">1</span>, <span class="number">59</span>, <span class="number">51</span>, <span class="number">43</span>, <span class="number">35</span>, <span class="number">27</span>, <span class="number">19</span>, <span class="number">11</span>,  <span class="number">3</span>, </span><br><span class="line">	<span class="number">61</span>, <span class="number">53</span>, <span class="number">45</span>, <span class="number">37</span>, <span class="number">29</span>, <span class="number">21</span>, <span class="number">13</span>,  <span class="number">5</span>, <span class="number">63</span>, <span class="number">55</span>, <span class="number">47</span>, <span class="number">39</span>, <span class="number">31</span>, <span class="number">23</span>, <span class="number">15</span>,  <span class="number">7</span> </span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+
+
+<h4 id="2-3-加密函数"><a href="#2-3-加密函数" class="headerlink" title="2.3  加密函数"></a>2.3  加密函数</h4><p>​        经过初始置换后，进行16轮完全相同的运算，在运算过程中数据与秘钥结合。函数 <strong>f</strong> 的输出经过一个异或运算，和左半部分结合形成新的右半部分，原来的右半部分成为新的左半部分。每轮迭代的过程可以表示如下：<br>$$<br>\begin{cases}<br>L_i = R_{i-1}\<br>R_i = L_{i-1}\oplus f(R_{i - 1}, K_i)\<br>i = 1, 2, 3, …, 16<br>\end{cases}<br>$$<br>​        其中 <strong>f</strong> 包括三部分 <strong>扩展置换E</strong>、 <strong>S-盒替换</strong> 、<strong>P-盒置换</strong> 。</p>
+<h5 id="2-3-1-扩展置换E"><a href="#2-3-1-扩展置换E" class="headerlink" title="2.3.1 扩展置换E"></a>2.3.1 扩展置换E</h5><p>​        通过扩展置换E，数据的右半部分 <strong>Rn</strong> 从32位扩展到48位。扩展置换改变了位的次序，重复了某些位。</p>
+<p>​        扩展置换的目的：a、产生与秘钥相同长度的数据以进行异或运算， <strong>R0</strong> 是32位，子秘钥是48位，所以 <strong>R0</strong> 要先进行扩展置换之后与子秘钥进行异或运算；b、提供更长的结果，使得在替换运算时能够进行压缩。</p>
+<p>​        扩展置换E规则如下：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">char</span> E_Table[<span class="number">48</span>] = &#123;</span><br><span class="line">	<span class="number">32</span>,  <span class="number">1</span>,  <span class="number">2</span>,  <span class="number">3</span>,  <span class="number">4</span>,  <span class="number">5</span>,  <span class="number">4</span>,  <span class="number">5</span>,  <span class="number">6</span>,  <span class="number">7</span>,  <span class="number">8</span>,  <span class="number">9</span>, </span><br><span class="line">	<span class="number">8</span>,  <span class="number">9</span>, <span class="number">10</span>, <span class="number">11</span>, <span class="number">12</span>, <span class="number">13</span>, <span class="number">12</span>, <span class="number">13</span>, <span class="number">14</span>, <span class="number">15</span>, <span class="number">16</span>, <span class="number">17</span>, </span><br><span class="line">	<span class="number">16</span>, <span class="number">17</span>, <span class="number">18</span>, <span class="number">19</span>, <span class="number">20</span>, <span class="number">21</span>, <span class="number">20</span>, <span class="number">21</span>, <span class="number">22</span>, <span class="number">23</span>, <span class="number">24</span>, <span class="number">25</span>, </span><br><span class="line">	<span class="number">24</span>, <span class="number">25</span>, <span class="number">26</span>, <span class="number">27</span>, <span class="number">28</span>, <span class="number">29</span>, <span class="number">28</span>, <span class="number">29</span>, <span class="number">30</span>, <span class="number">31</span>, <span class="number">32</span>,  <span class="number">1</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<h5 id="2-3-2-S-盒替换"><a href="#2-3-2-S-盒替换" class="headerlink" title="2.3.2 S-盒替换"></a>2.3.2 S-盒替换</h5><p>​        <strong>Rn</strong> 扩展置换之后与子秘钥<strong>Kn</strong>异或以后的结果作为输入块进行S盒替换运算功能是把48位数据变为32位数据。</p>
+<p>​        替换运算由8个不同的替换盒(<strong>S盒</strong>)完成。每个 <strong>S-盒</strong> 有6位输入，4位输出。所以48位的输入块被分成8个6位的分组，每一个分组对应一个S-盒替换操作。经过S-盒替换，形成8个4位分组结果。</p>
+<p>​        值得注意的是，每一个 <strong>S-盒</strong> 的输入数据是6位，输出数据是4位，但是每个 <strong>S-盒</strong> 自身是64位！！每个 <strong>S-盒</strong> 是4行16列的格式，因为二进制4位是0~15。8个 <strong>S-盒</strong> 的值如下：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">char</span> S_Box[<span class="number">8</span>][<span class="number">4</span>][<span class="number">16</span>] = &#123;</span><br><span class="line"> <span class="comment">//S1</span></span><br><span class="line">	<span class="number">14</span>,  <span class="number">4</span>, <span class="number">13</span>,  <span class="number">1</span>,  <span class="number">2</span>, <span class="number">15</span>, <span class="number">11</span>,  <span class="number">8</span>,  <span class="number">3</span>, <span class="number">10</span>,  <span class="number">6</span>, <span class="number">12</span>,  <span class="number">5</span>,  <span class="number">9</span>,  <span class="number">0</span>,  <span class="number">7</span>, </span><br><span class="line">	<span class="number">0</span>, <span class="number">15</span>,  <span class="number">7</span>,  <span class="number">4</span>, <span class="number">14</span>,  <span class="number">2</span>, <span class="number">13</span>,  <span class="number">1</span>, <span class="number">10</span>,  <span class="number">6</span>, <span class="number">12</span>, <span class="number">11</span>,  <span class="number">9</span>,  <span class="number">5</span>,  <span class="number">3</span>,  <span class="number">8</span>, </span><br><span class="line">	<span class="number">4</span>,  <span class="number">1</span>, <span class="number">14</span>,  <span class="number">8</span>, <span class="number">13</span>,  <span class="number">6</span>,  <span class="number">2</span>, <span class="number">11</span>, <span class="number">15</span>, <span class="number">12</span>,  <span class="number">9</span>,  <span class="number">7</span>,  <span class="number">3</span>, <span class="number">10</span>,  <span class="number">5</span>,  <span class="number">0</span>, </span><br><span class="line">	<span class="number">15</span>, <span class="number">12</span>,  <span class="number">8</span>,  <span class="number">2</span>,  <span class="number">4</span>,  <span class="number">9</span>,  <span class="number">1</span>,  <span class="number">7</span>,  <span class="number">5</span>, <span class="number">11</span>,  <span class="number">3</span>, <span class="number">14</span>, <span class="number">10</span>,  <span class="number">0</span>,  <span class="number">6</span>, <span class="number">13</span>, </span><br><span class="line"> <span class="comment">//S2</span></span><br><span class="line">	<span class="number">15</span>,  <span class="number">1</span>,  <span class="number">8</span>, <span class="number">14</span>,  <span class="number">6</span>, <span class="number">11</span>,  <span class="number">3</span>,  <span class="number">4</span>,  <span class="number">9</span>,  <span class="number">7</span>,  <span class="number">2</span>, <span class="number">13</span>, <span class="number">12</span>,  <span class="number">0</span>,  <span class="number">5</span>, <span class="number">10</span>, </span><br><span class="line">	<span class="number">3</span>, <span class="number">13</span>,  <span class="number">4</span>,  <span class="number">7</span>, <span class="number">15</span>,  <span class="number">2</span>,  <span class="number">8</span>, <span class="number">14</span>, <span class="number">12</span>,  <span class="number">0</span>,  <span class="number">1</span>, <span class="number">10</span>,  <span class="number">6</span>,  <span class="number">9</span>, <span class="number">11</span>,  <span class="number">5</span>, </span><br><span class="line">	<span class="number">0</span>, <span class="number">14</span>,  <span class="number">7</span>, <span class="number">11</span>, <span class="number">10</span>,  <span class="number">4</span>, <span class="number">13</span>,  <span class="number">1</span>,  <span class="number">5</span>,  <span class="number">8</span>, <span class="number">12</span>,  <span class="number">6</span>,  <span class="number">9</span>,  <span class="number">3</span>,  <span class="number">2</span>, <span class="number">15</span>, </span><br><span class="line">	<span class="number">13</span>,  <span class="number">8</span>, <span class="number">10</span>,  <span class="number">1</span>,  <span class="number">3</span>, <span class="number">15</span>,  <span class="number">4</span>,  <span class="number">2</span>, <span class="number">11</span>,  <span class="number">6</span>,  <span class="number">7</span>, <span class="number">12</span>,  <span class="number">0</span>,  <span class="number">5</span>, <span class="number">14</span>,  <span class="number">9</span>, </span><br><span class="line"> <span class="comment">//S3</span></span><br><span class="line">	<span class="number">10</span>,  <span class="number">0</span>,  <span class="number">9</span>, <span class="number">14</span>,  <span class="number">6</span>,  <span class="number">3</span>, <span class="number">15</span>,  <span class="number">5</span>,  <span class="number">1</span>, <span class="number">13</span>, <span class="number">12</span>,  <span class="number">7</span>, <span class="number">11</span>,  <span class="number">4</span>,  <span class="number">2</span>,  <span class="number">8</span>, </span><br><span class="line">	<span class="number">13</span>,  <span class="number">7</span>,  <span class="number">0</span>,  <span class="number">9</span>,  <span class="number">3</span>,  <span class="number">4</span>,  <span class="number">6</span>, <span class="number">10</span>,  <span class="number">2</span>,  <span class="number">8</span>,  <span class="number">5</span>, <span class="number">14</span>, <span class="number">12</span>, <span class="number">11</span>, <span class="number">15</span>,  <span class="number">1</span>, </span><br><span class="line">	<span class="number">13</span>,  <span class="number">6</span>,  <span class="number">4</span>,  <span class="number">9</span>,  <span class="number">8</span>, <span class="number">15</span>,  <span class="number">3</span>,  <span class="number">0</span>, <span class="number">11</span>,  <span class="number">1</span>,  <span class="number">2</span>, <span class="number">12</span>,  <span class="number">5</span>, <span class="number">10</span>, <span class="number">14</span>,  <span class="number">7</span>, </span><br><span class="line">	<span class="number">1</span>, <span class="number">10</span>, <span class="number">13</span>,  <span class="number">0</span>,  <span class="number">6</span>,  <span class="number">9</span>,  <span class="number">8</span>,  <span class="number">7</span>,  <span class="number">4</span>, <span class="number">15</span>, <span class="number">14</span>,  <span class="number">3</span>, <span class="number">11</span>,  <span class="number">5</span>,  <span class="number">2</span>, <span class="number">12</span>, </span><br><span class="line"> <span class="comment">//S4</span></span><br><span class="line">	<span class="number">7</span>, <span class="number">13</span>, <span class="number">14</span>,  <span class="number">3</span>,  <span class="number">0</span>,  <span class="number">6</span>,  <span class="number">9</span>, <span class="number">10</span>,  <span class="number">1</span>,  <span class="number">2</span>,  <span class="number">8</span>,  <span class="number">5</span>, <span class="number">11</span>, <span class="number">12</span>,  <span class="number">4</span>, <span class="number">15</span>, </span><br><span class="line">	<span class="number">13</span>,  <span class="number">8</span>, <span class="number">11</span>,  <span class="number">5</span>,  <span class="number">6</span>, <span class="number">15</span>,  <span class="number">0</span>,  <span class="number">3</span>,  <span class="number">4</span>,  <span class="number">7</span>,  <span class="number">2</span>, <span class="number">12</span>,  <span class="number">1</span>, <span class="number">10</span>, <span class="number">14</span>,  <span class="number">9</span>, </span><br><span class="line">	<span class="number">10</span>,  <span class="number">6</span>,  <span class="number">9</span>,  <span class="number">0</span>, <span class="number">12</span>, <span class="number">11</span>,  <span class="number">7</span>, <span class="number">13</span>, <span class="number">15</span>,  <span class="number">1</span>,  <span class="number">3</span>, <span class="number">14</span>,  <span class="number">5</span>,  <span class="number">2</span>,  <span class="number">8</span>,  <span class="number">4</span>, </span><br><span class="line">	<span class="number">3</span>, <span class="number">15</span>,  <span class="number">0</span>,  <span class="number">6</span>, <span class="number">10</span>,  <span class="number">1</span>, <span class="number">13</span>,  <span class="number">8</span>,  <span class="number">9</span>,  <span class="number">4</span>,  <span class="number">5</span>, <span class="number">11</span>, <span class="number">12</span>,  <span class="number">7</span>,  <span class="number">2</span>, <span class="number">14</span>, </span><br><span class="line"> <span class="comment">//S5</span></span><br><span class="line">	<span class="number">2</span>, <span class="number">12</span>,  <span class="number">4</span>,  <span class="number">1</span>,  <span class="number">7</span>, <span class="number">10</span>, <span class="number">11</span>,  <span class="number">6</span>,  <span class="number">8</span>,  <span class="number">5</span>,  <span class="number">3</span>, <span class="number">15</span>, <span class="number">13</span>,  <span class="number">0</span>, <span class="number">14</span>,  <span class="number">9</span>, </span><br><span class="line">	<span class="number">14</span>, <span class="number">11</span>,  <span class="number">2</span>, <span class="number">12</span>,  <span class="number">4</span>,  <span class="number">7</span>, <span class="number">13</span>,  <span class="number">1</span>,  <span class="number">5</span>,  <span class="number">0</span>, <span class="number">15</span>, <span class="number">10</span>,  <span class="number">3</span>,  <span class="number">9</span>,  <span class="number">8</span>,  <span class="number">6</span>, </span><br><span class="line">	<span class="number">4</span>,  <span class="number">2</span>,  <span class="number">1</span>, <span class="number">11</span>, <span class="number">10</span>, <span class="number">13</span>,  <span class="number">7</span>,  <span class="number">8</span>, <span class="number">15</span>,  <span class="number">9</span>, <span class="number">12</span>,  <span class="number">5</span>,  <span class="number">6</span>,  <span class="number">3</span>,  <span class="number">0</span>, <span class="number">14</span>, </span><br><span class="line">	<span class="number">11</span>,  <span class="number">8</span>, <span class="number">12</span>,  <span class="number">7</span>,  <span class="number">1</span>, <span class="number">14</span>,  <span class="number">2</span>, <span class="number">13</span>,  <span class="number">6</span>, <span class="number">15</span>,  <span class="number">0</span>,  <span class="number">9</span>, <span class="number">10</span>,  <span class="number">4</span>,  <span class="number">5</span>,  <span class="number">3</span>, </span><br><span class="line"> <span class="comment">//S6</span></span><br><span class="line">	<span class="number">12</span>,  <span class="number">1</span>, <span class="number">10</span>, <span class="number">15</span>,  <span class="number">9</span>,  <span class="number">2</span>,  <span class="number">6</span>,  <span class="number">8</span>,  <span class="number">0</span>, <span class="number">13</span>,  <span class="number">3</span>,  <span class="number">4</span>, <span class="number">14</span>,  <span class="number">7</span>,  <span class="number">5</span>, <span class="number">11</span>, </span><br><span class="line">	<span class="number">10</span>, <span class="number">15</span>,  <span class="number">4</span>,  <span class="number">2</span>,  <span class="number">7</span>, <span class="number">12</span>,  <span class="number">9</span>,  <span class="number">5</span>,  <span class="number">6</span>,  <span class="number">1</span>, <span class="number">13</span>, <span class="number">14</span>,  <span class="number">0</span>, <span class="number">11</span>,  <span class="number">3</span>,  <span class="number">8</span>, </span><br><span class="line">	<span class="number">9</span>, <span class="number">14</span>, <span class="number">15</span>,  <span class="number">5</span>,  <span class="number">2</span>,  <span class="number">8</span>, <span class="number">12</span>,  <span class="number">3</span>,  <span class="number">7</span>,  <span class="number">0</span>,  <span class="number">4</span>, <span class="number">10</span>,  <span class="number">1</span>, <span class="number">13</span>, <span class="number">11</span>,  <span class="number">6</span>, </span><br><span class="line">	<span class="number">4</span>,  <span class="number">3</span>,  <span class="number">2</span>, <span class="number">12</span>,  <span class="number">9</span>,  <span class="number">5</span>, <span class="number">15</span>, <span class="number">10</span>, <span class="number">11</span>, <span class="number">14</span>,  <span class="number">1</span>,  <span class="number">7</span>,  <span class="number">6</span>,  <span class="number">0</span>,  <span class="number">8</span>, <span class="number">13</span>, </span><br><span class="line"> <span class="comment">//S7</span></span><br><span class="line">	<span class="number">4</span>, <span class="number">11</span>,  <span class="number">2</span>, <span class="number">14</span>, <span class="number">15</span>,  <span class="number">0</span>,  <span class="number">8</span>, <span class="number">13</span>,  <span class="number">3</span>, <span class="number">12</span>,  <span class="number">9</span>,  <span class="number">7</span>,  <span class="number">5</span>, <span class="number">10</span>,  <span class="number">6</span>,  <span class="number">1</span>, </span><br><span class="line">	<span class="number">13</span>,  <span class="number">0</span>, <span class="number">11</span>,  <span class="number">7</span>,  <span class="number">4</span>,  <span class="number">9</span>,  <span class="number">1</span>, <span class="number">10</span>, <span class="number">14</span>,  <span class="number">3</span>,  <span class="number">5</span>, <span class="number">12</span>,  <span class="number">2</span>, <span class="number">15</span>,  <span class="number">8</span>,  <span class="number">6</span>, </span><br><span class="line">	<span class="number">1</span>,  <span class="number">4</span>, <span class="number">11</span>, <span class="number">13</span>, <span class="number">12</span>,  <span class="number">3</span>,  <span class="number">7</span>, <span class="number">14</span>, <span class="number">10</span>, <span class="number">15</span>,  <span class="number">6</span>,  <span class="number">8</span>,  <span class="number">0</span>,  <span class="number">5</span>,  <span class="number">9</span>,  <span class="number">2</span>, </span><br><span class="line">	<span class="number">6</span>, <span class="number">11</span>, <span class="number">13</span>,  <span class="number">8</span>,  <span class="number">1</span>,  <span class="number">4</span>, <span class="number">10</span>,  <span class="number">7</span>,  <span class="number">9</span>,  <span class="number">5</span>,  <span class="number">0</span>, <span class="number">15</span>, <span class="number">14</span>,  <span class="number">2</span>,  <span class="number">3</span>, <span class="number">12</span>, </span><br><span class="line"> <span class="comment">//S8</span></span><br><span class="line">	<span class="number">13</span>,  <span class="number">2</span>,  <span class="number">8</span>,  <span class="number">4</span>,  <span class="number">6</span>, <span class="number">15</span>, <span class="number">11</span>,  <span class="number">1</span>, <span class="number">10</span>,  <span class="number">9</span>,  <span class="number">3</span>, <span class="number">14</span>,  <span class="number">5</span>,  <span class="number">0</span>, <span class="number">12</span>,  <span class="number">7</span>, </span><br><span class="line">	<span class="number">1</span>, <span class="number">15</span>, <span class="number">13</span>,  <span class="number">8</span>, <span class="number">10</span>,  <span class="number">3</span>,  <span class="number">7</span>,  <span class="number">4</span>, <span class="number">12</span>,  <span class="number">5</span>,  <span class="number">6</span>, <span class="number">11</span>,  <span class="number">0</span>, <span class="number">14</span>,  <span class="number">9</span>,  <span class="number">2</span>, </span><br><span class="line">	<span class="number">7</span>, <span class="number">11</span>,  <span class="number">4</span>,  <span class="number">1</span>,  <span class="number">9</span>, <span class="number">12</span>, <span class="number">14</span>,  <span class="number">2</span>,  <span class="number">0</span>,  <span class="number">6</span>, <span class="number">10</span>, <span class="number">13</span>, <span class="number">15</span>,  <span class="number">3</span>,  <span class="number">5</span>,  <span class="number">8</span>, </span><br><span class="line">	<span class="number">2</span>,  <span class="number">1</span>, <span class="number">14</span>,  <span class="number">7</span>,  <span class="number">4</span>, <span class="number">10</span>,  <span class="number">8</span>, <span class="number">13</span>, <span class="number">15</span>, <span class="number">12</span>,  <span class="number">9</span>,  <span class="number">0</span>,  <span class="number">3</span>,  <span class="number">5</span>,  <span class="number">6</span>, <span class="number">11</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<h5 id="2-3-3-P-盒替换"><a href="#2-3-3-P-盒替换" class="headerlink" title="2.3.3 P-盒替换"></a>2.3.3 P-盒替换</h5><p>​        S-盒替换运算，每一盒得到4位，8盒共得到32位输出。这32位输出作为P盒置换的输入块。P盒置换将每一位输入位映射到输出位。任何一位都不能被映射两次，也不能被略去。</p>
+<p>​        经过P-盒置换的结果与最初64位分组的左半部分异或，然后左右两部分交换，开始下一轮迭代。P-盒置换表(表示数据的位置)共32位。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">char</span> P_Table[<span class="number">32</span>] = &#123;</span><br><span class="line">	<span class="number">16</span>,  <span class="number">7</span>, <span class="number">20</span>, <span class="number">21</span>, <span class="number">29</span>, <span class="number">12</span>, <span class="number">28</span>, <span class="number">17</span>,  <span class="number">1</span>, <span class="number">15</span>, <span class="number">23</span>, <span class="number">26</span>,  <span class="number">5</span>, <span class="number">18</span>, <span class="number">31</span>, <span class="number">10</span>, </span><br><span class="line">	<span class="number">2</span>,  <span class="number">8</span>, <span class="number">24</span>, <span class="number">14</span>, <span class="number">32</span>, <span class="number">27</span>,  <span class="number">3</span>,  <span class="number">9</span>, <span class="number">19</span>, <span class="number">13</span>, <span class="number">30</span>,  <span class="number">6</span>, <span class="number">22</span>, <span class="number">11</span>,  <span class="number">4</span>, <span class="number">25</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<h4 id="2-4-逆置换"><a href="#2-4-逆置换" class="headerlink" title="2.4 逆置换"></a>2.4 逆置换</h4><p>​        将初始置换进行16次的迭代，即进行16层的加密变换，这个运算过程我们暂时称为函数f。得到 <strong>L16</strong> 和 <strong>R16</strong> ，将此作为输入块，进行逆置换得到最终的密文输出块。逆置换是初始置换的逆运算，逆置换规则如下:</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> <span class="keyword">char</span> IPR_Table[<span class="number">64</span>] = &#123;              </span><br><span class="line">	<span class="number">40</span>,  <span class="number">8</span>, <span class="number">48</span>, <span class="number">16</span>, <span class="number">56</span>, <span class="number">24</span>, <span class="number">64</span>, <span class="number">32</span>, <span class="number">39</span>,  <span class="number">7</span>, <span class="number">47</span>, <span class="number">15</span>, <span class="number">55</span>, <span class="number">23</span>, <span class="number">63</span>, <span class="number">31</span>, </span><br><span class="line">	<span class="number">38</span>,  <span class="number">6</span>, <span class="number">46</span>, <span class="number">14</span>, <span class="number">54</span>, <span class="number">22</span>, <span class="number">62</span>, <span class="number">30</span>, <span class="number">37</span>,  <span class="number">5</span>, <span class="number">45</span>, <span class="number">13</span>, <span class="number">53</span>, <span class="number">21</span>, <span class="number">61</span>, <span class="number">29</span>, </span><br><span class="line">	<span class="number">36</span>,  <span class="number">4</span>, <span class="number">44</span>, <span class="number">12</span>, <span class="number">52</span>, <span class="number">20</span>, <span class="number">60</span>, <span class="number">28</span>, <span class="number">35</span>,  <span class="number">3</span>, <span class="number">43</span>, <span class="number">11</span>, <span class="number">51</span>, <span class="number">19</span>, <span class="number">59</span>, <span class="number">27</span>, </span><br><span class="line">	<span class="number">34</span>,  <span class="number">2</span>, <span class="number">42</span>, <span class="number">10</span>, <span class="number">50</span>, <span class="number">18</span>, <span class="number">58</span>, <span class="number">26</span>, <span class="number">33</span>,  <span class="number">1</span>, <span class="number">41</span>,  <span class="number">9</span>, <span class="number">49</span>, <span class="number">17</span>, <span class="number">57</span>, <span class="number">25</span> </span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<h3 id="3-流程图"><a href="#3-流程图" class="headerlink" title="3 流程图"></a>3 流程图</h3><img src="https://s2.loli.net/2021/12/11/OATNKltjbcJaqMn.png" style="zoom: 67%;" />
+
+
+
+<h2 id="具体实现"><a href="#具体实现" class="headerlink" title="具体实现"></a>具体实现</h2><p>自实现 <strong>DES</strong> 包括三个文件：<strong>function.h</strong>、<strong>function.c</strong> 以及 <strong>main.c</strong>.</p>
+<p><strong>function.h</strong>: 存放全局变量定义以及各实现函数声明。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/************************************** 全局变量 **************************************************/</span></span><br><span class="line"><span class="keyword">extern</span> <span class="keyword">int</span> <span class="built_in">list</span>;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">/************************************** 自定义函数 ************************************************/</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">SetKey</span><span class="params">(<span class="keyword">char</span> Enc_Key[<span class="number">8</span>])</span></span>;                                                       <span class="comment">// 生成16轮的子密钥；</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">Swap</span><span class="params">(<span class="keyword">bool</span> * Data_out, <span class="keyword">char</span> * Data_in, <span class="keyword">int</span> number)</span></span>;                             <span class="comment">// 字节转换成位；</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">TableReplace</span><span class="params">(<span class="keyword">bool</span> *Data_out, <span class="keyword">bool</span> *Data_in, <span class="keyword">const</span> <span class="keyword">char</span> *Table, <span class="keyword">int</span> number)</span></span>;    <span class="comment">// 各种表的置换算法；</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">Bitcopy</span><span class="params">(<span class="keyword">bool</span> * Data_out, <span class="keyword">bool</span> * Data_in, <span class="keyword">int</span> number)</span></span>;                          <span class="comment">// 二进制数组的拷贝</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">Loop_bit</span><span class="params">(<span class="keyword">bool</span> * Data_out, <span class="keyword">int</span> movstep, <span class="keyword">int</span> len)</span></span>;                               <span class="comment">// 左移位；</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">Run_DES</span><span class="params">(<span class="keyword">char</span> message[<span class="number">8</span>], <span class="keyword">char</span> HexMssage[<span class="number">16</span>], <span class="keyword">int</span> flag)</span></span>;                        <span class="comment">// DES的轮加密算法</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">Xor</span><span class="params">(<span class="keyword">bool</span> * Message_out,  <span class="keyword">bool</span> * Message_in, <span class="keyword">int</span> number)</span></span>;                       <span class="comment">// 执行异或</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">S_change</span><span class="params">(<span class="keyword">bool</span> * Data_out,  <span class="keyword">bool</span> * Data_in)</span></span>;                                    <span class="comment">// S盒变换；</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">HexToBit</span><span class="params">(<span class="keyword">bool</span> * Data_out, <span class="keyword">char</span> * Data_in, <span class="keyword">int</span> number)</span></span>;                         <span class="comment">// 十六进制转二进制</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">BitToHex</span><span class="params">(<span class="keyword">char</span> * Data_out, <span class="keyword">bool</span> * Data_in, <span class="keyword">int</span> number)</span></span>;                         <span class="comment">// 二进制转换成十六进制；</span></span><br></pre></td></tr></table></figure>
+
+<p>function.c: 存放各函数的具体实现内容。</p>
+<p>main.c: 主函数运行程序并测速，将1000000次的密文变化数写入result.txt中。</p>
+<h2 id="运行结果"><a href="#运行结果" class="headerlink" title="运行结果"></a>运行结果</h2><p>​        以下为一次运行时的截图，经统计DES加密1000000次的时间约11400ms，解密时间类似。</p>
+<p><img data-fancybox="gallery" data-sizes="auto" data-src="https://s2.loli.net/2021/12/12/kzpP2KX8yBfujlb.png" alt="结果一" class="lazyload"></p>
+<p>​        同时，明文每变化1bit，密文的变化情况如图所示(基本符合32的正态分布)：</p>
+<p><img src="https://s2.loli.net/2021/12/12/5JLhBqwcaskubZg.png"></p>
+<p>​        0bit的出现的可能原因在于，当变化的1bit位和前一个变化的bit相同时(采用和前一次密文的结果比较的方式查看密文变化的位数)，二者的变化比特数可能相同，故会出现0的情况，属于本实验方法的原因，DES的原理还是符合0-64的正态分布的。</p>
+<p>代码实现在博主的个人GitHub上：<a target="_blank" rel="noopener" href="https://github.com/hurry-hub/cryptography_work/tree/main/DES">https://github.com/hurry-hub/cryptography_work/tree/main/DES</a></p>
+
+  </article>
+
+  
+      
+    <div class="nexmoe-post-copyright">
+        <strong>Author：</strong>Hurry Rechard<br>
+        <strong>Link：</strong><a href="https://hurry-hub.github.io/2021/12/12/DES/" title="https:&#x2F;&#x2F;hurry-hub.github.io&#x2F;2021&#x2F;12&#x2F;12&#x2F;DES&#x2F;" target="_blank" rel="noopener">https:&#x2F;&#x2F;hurry-hub.github.io&#x2F;2021&#x2F;12&#x2F;12&#x2F;DES&#x2F;</a><br>
+        
+            <strong>版权声明：</strong>本文采用 <a href="https://creativecommons.org/licenses/by-nc-sa/3.0/cn/deed.zh" target="_blank">CC BY-NC-SA 3.0 CN</a> 协议进行许可
+        
+    </div>
+
+
+  
+  
+  <div class="nexmoe-post-meta nexmoe-rainbow">
+    
+        <a class="nexmoefont icon-appstore-fill -link" href="/categories/cryptography/">cryptography</a>
+    
+    
+        <a class="nexmoefont icon-tag-fill -none-link" href="/tags/%E5%AF%86%E7%A0%81%E5%AD%A6/" rel="tag">密码学</a>
+    
+</div>
+
+  
+      <div class="nexmoe-post-footer">
+          <section class="nexmoe-comment">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@latest/dist/gitalk.min.css">
+<div id="gitalk"></div>
+<script src="https://cdn.jsdelivr.net/npm/gitalk@latest/dist/gitalk.min.js"></script>
+<script type="text/javascript">
+    var gitalk = new Gitalk({
+        clientID: '37f200093d04e22cef87',
+        clientSecret: 'eca19b73fdc19551a488d42ae375334521108e27',
+        id: window.location.pathname,
+        repo: 'blogissue',
+        owner: 'hurry-hub',
+        admin: 'hurry-hub'
+    })
+    gitalk.render('gitalk')
+</script>
+</section>
+      </div>
+  
+</div>
+            <div class="nexmoe-post-right">
+              <div class="nexmoe-fixed">
+                  <div class="nexmoe-tool"> 
+                    
+                      
+                        
+                          
+                          
+                              <button class="mdui-fab catalog" style="overflow:unset;">
+                                  <i class="nexmoefont icon-i-catalog"></i>
+                                  <div class="nexmoe-toc">
+                                      <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#64%E4%BD%8DDES%E7%AE%97%E6%B3%95"><span class="toc-number">1.</span> <span class="toc-text">64位DES算法</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9F%BA%E6%9C%AC%E5%8E%9F%E7%90%86"><span class="toc-number">1.1.</span> <span class="toc-text">基本原理</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-%E8%BE%93%E5%85%A5%E8%BE%93%E5%87%BA%E5%8F%82%E6%95%B0"><span class="toc-number">1.1.1.</span> <span class="toc-text">1 输入输出参数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-%E6%B5%81%E7%A8%8B"><span class="toc-number">1.1.2.</span> <span class="toc-text">2 流程</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#2-1-%E5%AD%90%E5%AF%86%E9%92%A5%E4%BA%A7%E7%94%9F"><span class="toc-number">1.1.2.1.</span> <span class="toc-text">2.1 子密钥产生</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-2-%E5%88%9D%E5%A7%8B%E7%BD%AE%E6%8D%A2-IP"><span class="toc-number">1.1.2.2.</span> <span class="toc-text">2.2 初始置换 IP</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-3-%E5%8A%A0%E5%AF%86%E5%87%BD%E6%95%B0"><span class="toc-number">1.1.2.3.</span> <span class="toc-text">2.3  加密函数</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#2-3-1-%E6%89%A9%E5%B1%95%E7%BD%AE%E6%8D%A2E"><span class="toc-number">1.1.2.3.1.</span> <span class="toc-text">2.3.1 扩展置换E</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#2-3-2-S-%E7%9B%92%E6%9B%BF%E6%8D%A2"><span class="toc-number">1.1.2.3.2.</span> <span class="toc-text">2.3.2 S-盒替换</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#2-3-3-P-%E7%9B%92%E6%9B%BF%E6%8D%A2"><span class="toc-number">1.1.2.3.3.</span> <span class="toc-text">2.3.3 P-盒替换</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-4-%E9%80%86%E7%BD%AE%E6%8D%A2"><span class="toc-number">1.1.2.4.</span> <span class="toc-text">2.4 逆置换</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-%E6%B5%81%E7%A8%8B%E5%9B%BE"><span class="toc-number">1.1.3.</span> <span class="toc-text">3 流程图</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%B7%E4%BD%93%E5%AE%9E%E7%8E%B0"><span class="toc-number">1.2.</span> <span class="toc-text">具体实现</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%BF%90%E8%A1%8C%E7%BB%93%E6%9E%9C"><span class="toc-number">1.3.</span> <span class="toc-text">运行结果</span></a></li></ol></li></ol>
+                                  </div>
+                              </button>
+                          
+                          
+                      
+                    
+                      <a href="#nexmoe-content" class="toc-link" aria-label="回到顶部" title="top"><button class="mdui-fab mdui-ripple"><i class="nexmoefont icon-caret-top"></i></button></a>
+                  </div>
+              </div>
+            </div>
+        </div>
+    </div>
+     
+    <div id="nexmoe-search-space">
+        <div class="search-container">
+            <div class="search-header">
+                <div class="search-input-container">
+                    <input class="search-input" type="text" placeholder="Search" oninput="sinput();">
+                </div>
+                <a class="search-close" onclick="sclose();">×</a>
+            </div>
+            <div class="search-body"></div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/combine/npm/lazysizes@5.1.0/lazysizes.min.js,npm/mdui@0.4.3/dist/js/mdui.min.js?v=1"></script>
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js"></script>
+
+ 
+
+<script async src="/js/app.js?v=1649861912802"></script>
+
+
+
+<script src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.8.1/dist/js/jquery.justifiedGallery.min.js"></script>
+<script>
+	$(".justified-gallery").justifiedGallery({
+		rowHeight: 160,
+		margins: 10,
+	});
+</script>
+
+<script>
+(function(){
+    var bp = document.createElement('script');
+    bp.src = '//push.zhanzhang.baidu.com/push.js';
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+    
+
+
+
+
+
+    <!-- baidu Analytics -->
+<script>
+    var _hmt = _hmt || [];
+    (function() {var hm = document.createElement('script');
+    hm.src = 'https://hm.baidu.com/hm.js?4aab437d77fe444e7670ae55f85effce#&lt;ID&gt;';
+    var s = document.getElementsByTagName('script')[0];
+        s.parentNode.insertBefore(hm, s);
+    })();
+</script>
+
+</body>
+
+</html>

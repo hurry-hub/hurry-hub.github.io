@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+
+<html lang="zh-Hans">
+
+<head>
+    
+    <title>最小函数依赖集Fm的定义，求法以及举例 - Hurry Rechard&#39;s Blog</title>
+    <meta charset="UTF-8">
+    <meta name="keywords" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5">
+    
+    
+
+    <!-- Site Verification -->
+    <meta name="baidu-site-verification" content="code-k5HcBW1pgY" />
+
+    <link rel="shortcut icon" href="https://raw.githubusercontent.com/hurry-hub/blogimage/main/img/favicon.ico" type="image/x-icon" />
+    <meta name="description" content="此篇为博主从个人csdn搬运的第二篇博客，关于数据库的最小函数依赖集Fm的求解问题。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="最小函数依赖集Fm的定义，求法以及举例">
+<meta property="og:url" content="https://hurry-hub.github.io/2021/06/06/Fm/index.html">
+<meta property="og:site_name" content="Hurry Rechard&#39;s Blog">
+<meta property="og:description" content="此篇为博主从个人csdn搬运的第二篇博客，关于数据库的最小函数依赖集Fm的求解问题。">
+<meta property="og:locale">
+<meta property="article:published_time" content="2021-06-06T07:27:21.000Z">
+<meta property="article:modified_time" content="2021-12-01T10:15:26.148Z">
+<meta property="article:author" content="Hurry Rechard">
+<meta property="article:tag" content="数据库">
+<meta name="twitter:card" content="summary">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/combine/npm/highlight.js@9.15.8/styles/atom-one-dark.css,npm/justifiedGallery@3.8.1/dist/css/justifiedGallery.min.css,gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css,npm/hexo-theme-nexmoe@latest/source/lib/mdui_043tiny/css/mdui.css,npm/hexo-theme-nexmoe@latest/source/lib/iconfont/iconfont.css?v=233" crossorigin>
+    <link rel="stylesheet" href="/css/style.css?v=1649861912808">
+    
+        <link rel="stylesheet" href="/css/dark.css?v=1649861912808">
+     
+    
+    <link rel="stylesheet" href="/lib/iconfont/iconfont.css?v=1649861912808">
+    
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+<body class="mdui-drawer-body-left">
+    
+    <div id="nexmoe-background">
+        <div class="nexmoe-bg" style="background-image: url(https://raw.githubusercontent.com/hurry-hub/blogimage/main/img/ayase.png)"></div>
+        <div class="mdui-appbar mdui-shadow-0">
+            <div class="mdui-toolbar">
+                <a mdui-drawer="{target: '#drawer', swipe: true}" title="menu" class="mdui-btn mdui-btn-icon mdui-ripple"><i class="mdui-icon nexmoefont icon-menu"></i></a>
+                <div class="mdui-toolbar-spacer"></div>
+                <!--<a href="javascript:;" class="mdui-btn mdui-btn-icon"><i class="mdui-icon material-icons">search</i></a>-->
+                <a href="/" title="Hurry Rechard" class="mdui-btn mdui-btn-icon"><img src="https://raw.githubusercontent.com/hurry-hub/blogimage/main/img/violet%20a.bmp# 网站 Logo" alt="Hurry Rechard"></a>
+            </div>
+        </div>
+    </div>
+    <div id="nexmoe-header">
+        <div class="nexmoe-drawer mdui-drawer" id="drawer">
+    <div class="nexmoe-avatar mdui-ripple">
+        <a href="/" title="Hurry Rechard">
+            <img src="https://raw.githubusercontent.com/hurry-hub/blogimage/main/img/violet%20a.bmp# 网站 Logo" alt="Hurry Rechard" alt="Hurry Rechard">
+        </a>
+    </div>
+    <div class="nexmoe-count">
+        <div><span>Articles</span>6</div>
+        <div><span>Tags</span>3</div>
+        <div><span>Categories</span>3</div>
+    </div>
+    <div class="nexmoe-list mdui-list" mdui-collapse="{accordion: true}">
+        
+        <a class="nexmoe-list-item mdui-list-item mdui-ripple false" href="/" title="回到首页">
+            <i class="mdui-list-item-icon nexmoefont icon-home"></i>
+            <div class="mdui-list-item-content">
+                回到首页
+            </div>
+        </a>
+        
+        <a class="nexmoe-list-item mdui-list-item mdui-ripple false" href="/archives.html" title="文章归档">
+            <i class="mdui-list-item-icon nexmoefont icon-container"></i>
+            <div class="mdui-list-item-content">
+                文章归档
+            </div>
+        </a>
+        
+        <a class="nexmoe-list-item mdui-list-item mdui-ripple false" href="/about.html" title="关于博客">
+            <i class="mdui-list-item-icon nexmoefont icon-info-circle"></i>
+            <div class="mdui-list-item-content">
+                关于博客
+            </div>
+        </a>
+        
+        <a class="nexmoe-list-item mdui-list-item mdui-ripple false" href="/py.html" title="我的朋友">
+            <i class="mdui-list-item-icon nexmoefont icon-unorderedlist"></i>
+            <div class="mdui-list-item-content">
+                我的朋友
+            </div>
+        </a>
+        
+    </div>
+    <aside id="nexmoe-sidebar">
+    
+    <div class="nexmoe-widget-wrap">
+    <div class="nexmoe-widget nexmoe-search">
+         
+            <form id="search_form" action_e="https://cn.bing.com/search?q=site:hurry-hub.github.io" onsubmit="return search();">
+                <label><input id="search_value" name="q" type="search" placeholder="Search"></label>
+            </form>
+         
+    </div>
+</div>
+    
+    <div class="nexmoe-widget-wrap">
+    <div class="nexmoe-widget nexmoe-social">
+        <a class="mdui-ripple" href="https://jq.qq.com/?_wv=1027&k=5CfKHun" target="_blank" mdui-tooltip="{content: 'QQ群'}" style="color: rgb(249, 174, 8);background-color: rgba(249, 174, 8, .1);">
+            <i class="nexmoefont icon-QQ"></i>
+        </a><a class="mdui-ripple" href="https://space.bilibili.com/438182397" target="_blank" mdui-tooltip="{content: '哔哩哔哩'}" style="color: rgb(231, 106, 141);background-color: rgba(231, 106, 141, .15);">
+            <i class="nexmoefont icon-bilibili"></i>
+        </a><a class="mdui-ripple" href="https://github.com/hurry-hub" target="_blank" mdui-tooltip="{content: 'GitHub'}" style="color: rgb(25, 23, 23);background-color: rgba(25, 23, 23, .15);">
+            <i class="nexmoefont icon-github"></i>
+        </a>
+    </div>
+</div>
+    
+    
+  <div class="nexmoe-widget-wrap">
+    <h3 class="nexmoe-widget-title">Categories</h3>
+    <div class="nexmoe-widget">
+
+      <ul class="category-list">
+
+        
+
+
+        
+
+        
+
+        <li class="category-list-item">
+          <a class="category-list-link" href="/categories/cryptography/">cryptography</a>
+          <span class="category-list-count">3</span>
+        </li>
+
+        
+
+        <li class="category-list-item">
+          <a class="category-list-link" href="/categories/os/">os</a>
+          <span class="category-list-count">1</span>
+        </li>
+
+        
+
+        <li class="category-list-item">
+          <a class="category-list-link" href="/categories/sql/">sql</a>
+          <span class="category-list-count">2</span>
+        </li>
+
+        
+      </ul>
+
+    </div>
+  </div>
+
+
+    
+    
+  <div class="nexmoe-widget-wrap">
+    <div id="randomtagcloud" class="nexmoe-widget tagcloud nexmoe-rainbow">
+      <a href="/tags/%E5%AF%86%E7%A0%81%E5%AD%A6/" style="font-size: 20px;">密码学</a> <a href="/tags/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/" style="font-size: 10px;">操作系统</a> <a href="/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/" style="font-size: 15px;">数据库</a>
+    </div>
+    
+  </div>
+
+    
+</aside>
+    <div class="nexmoe-copyright">
+        &copy; 2022 Hurry Rechard
+        Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+        & <a href="https://github.com/theme-nexmoe/hexo-theme-nexmoe" target="_blank">Nexmoe</a>
+        
+    </div>
+</div><!-- .nexmoe-drawer -->
+    </div>
+    <div id="nexmoe-content">
+        <div class="nexmoe-primary">
+            <div class="nexmoe-post">
+
+  <article>
+      
+          <div class="nexmoe-post-cover" style="padding-bottom: NaN%;"> 
+              <img data-src="https://raw.githubusercontent.com/hurry-hub/blogimage/main/img/OIP.jpg" data-sizes="auto" alt="最小函数依赖集Fm的定义，求法以及举例" class="lazyload">
+              <h1>最小函数依赖集Fm的定义，求法以及举例</h1>
+          </div>
+      
+      
+      <div class="nexmoe-post-meta nexmoe-rainbow" style="margin:10px 0!important;">
+    <a><i class="nexmoefont icon-calendar-fill"></i>2021年06月06日</a>
+    <a><i class="nexmoefont icon-areachart"></i>1.3k 字</a>
+    <a><i class="nexmoefont icon-time-circle-fill"></i>大概 7 分钟</a>
+</div>
+
+      
+
+      <hr>
+<p>此篇为博主从个人csdn搬运的第二篇博客，关于数据库的最小函数依赖集Fm的求解问题。</p>
+<span id="more"></span>
+
+<h1 id="定义"><a href="#定义" class="headerlink" title="定义"></a>定义</h1><p>如果函数依赖集F满足以下三个条件，则称F为最小函数依赖集，记作<strong>Fm</strong>。</p>
+<pre><code>①F中每个函数依赖的右部都是单属性，即右部最简化。
+②对于F中任一函数依赖X -&gt; A 和X的真子集X&#39;,(F - (X - A)) ∪ (X&#39; -&gt; A)
+与F都不等价，即左部无多余属性。
+③对于F中任一函数依赖X -&gt; A,F - &#123;X -&gt; A&#125;与F都不等价,即无多余函数依赖。
+</code></pre>
+<h1 id="求法"><a href="#求法" class="headerlink" title="求法"></a>求法</h1><p>输入：一个函数依赖集F。<br>输出：F的一个等价的<strong>最小函数依赖集Fm</strong>。<br>步骤：<br>(1)用<strong>分解</strong>规则，使F中的每个函数依赖的右部仅含单属性。此步为等价分解。<br>(2)<strong>去掉各依赖左部多余的属性</strong>。一个一个地检查左部非单个属性地函数依赖。即XY -&gt; A ,判断Y是否多余，则在分解后地F求X的**属性闭包X+**，若A包含于X+ ，则Y是多余的。此步为等价消属性。<br>(3)<strong>去掉多余的函数依赖</strong>。逐一检查上步结果F的各函数依赖X -&gt; A,并将X -&gt; A从F中去掉，然后在剩下的F中去求X+，若A包含于X+，则X -&gt; A多余。依次做下去，直到找不到冗余的函数依赖。此步为等价消依赖。</p>
+<h1 id="举例"><a href="#举例" class="headerlink" title="举例"></a>举例</h1><p>设有函数依赖集 F = {AB -&gt; CE, A -&gt; C, GP -&gt; B, EP -&gt; A, CDE -&gt; P, HB -&gt; P, D -&gt; HG, ABC -&gt; PG}， 求与 F 等价的最小函数依赖集。</p>
+<p>解：<br>①分解D-&gt;HG为D-&gt;H、D-&gt;G，分解AB-&gt;CE为AB-&gt;C、AB-&gt;E，分解ABC-&gt;PG为ABC-&gt;P、ABC-&gt;G，得到<strong>F={AB-&gt;C, AB-&gt;E, A-&gt;C, GP-&gt;B, EP-&gt;A, CDE-&gt;P, HB-&gt;P, D-&gt;H, D-&gt;G, ABC-&gt;P, ABC-&gt;G}</strong></p>
+<p>②判断AB -&gt; C中B是否冗余：由于存在A -&gt; C，故B冗余，<strong>F={AB-&gt;E, A-&gt;C, GP-&gt;B, EP-&gt;A, CDE-&gt;P, HB-&gt;P, D-&gt;H, D-&gt;G, ABC-&gt;P, ABC-&gt;G}</strong></p>
+<p>经判断其余左部均无多余属性，进行到下一步。</p>
+<p>③判断AB-&gt;E是否冗余, F’ ={A-&gt;C, GP-&gt;B, EP-&gt;A, CDE-&gt;P, HB-&gt;P, D-&gt;H, D-&gt;G, ABC-&gt;P, ABC-&gt;G}<br><strong>AB+ = ABCPG</strong>, AB-&gt;E不冗余, <strong>F ={AB-&gt;E, A-&gt;C, GP-&gt;B, EP-&gt;A, CDE-&gt;P, HB-&gt;P, D-&gt;H, D-&gt;G, ABC-&gt;P, ABC-&gt;G}</strong></p>
+<p>判断A-&gt;C是否冗余, F’ ={AB-&gt;E, GP-&gt;B, EP-&gt;A, CDE-&gt;P, HB-&gt;P, D-&gt;H, D-&gt;G, ABC-&gt;P, ABC-&gt;G}<br><strong>A+ = A</strong>，A-&gt;C不冗余, <strong>F ={AB-&gt;E, A-&gt;C, GP-&gt;B, EP-&gt;A, CDE-&gt;P, HB-&gt;P, D-&gt;H, D-&gt;G, ABC-&gt;P, ABC-&gt;G}</strong> </p>
+<p>判断GP-&gt;B是否冗余, F’ ={AB-&gt;E, A-&gt;C, EP-&gt;A, CDE-&gt;P, HB-&gt;P, D-&gt;H, D-&gt;G, ABC-&gt;P, ABC-&gt;G}<br><strong>GP+ = GP</strong>, GP-&gt;B不冗余, **F ={AB-&gt;E, A-&gt;C, GP-&gt;B, EP-&gt;A, CDE-&gt;P, HB-&gt;P, D-&gt;H, D-&gt;G, ABC-&gt;P, ABC-&gt;G} **</p>
+<p>判断EP-&gt;A是否冗余, F’ = {AB-&gt;E, A-&gt;C, CDE-&gt;P, HB-&gt;P, D-&gt;H, D-&gt;G, ABC-&gt;P, ABC-&gt;G}<br><strong>EP+ = EP</strong> , EP-&gt;A不冗余, **F ={AB-&gt;E, A-&gt;C, GP-&gt;B, EP-&gt;A, CDE-&gt;P, HB-&gt;P, D-&gt;H, D-&gt;G, ABC-&gt;P, ABC-&gt;G} **</p>
+<p>判断CDE-&gt;P是否冗余, F’ = {AB-&gt;E, A-&gt;C, GP-&gt;B, EP-&gt;A, HB-&gt;P, D-&gt;H, D-&gt;G, ABC-&gt;P, ABC-&gt;G}<br><strong>CDE+ = CDEHG</strong>, CDE-&gt;P不冗余, <strong>F ={AB-&gt;E, A-&gt;C, GP-&gt;B, EP-&gt;A, CDE-&gt;P, HB-&gt;P, D-&gt;H, D-&gt;G, ABC-&gt;P, ABC-&gt;G}</strong></p>
+<p>判断HB-&gt;P是否冗余, F’ ={AB-&gt;E, A-&gt;C, GP-&gt;B, EP-&gt;A, CDE-&gt;P, D-&gt;H, D-&gt;G, ABC-&gt;P, ABC-&gt;G}<br><strong>HB+ = HB</strong>, HB-&gt;P不冗余, <strong>F ={AB-&gt;E, A-&gt;C, GP-&gt;B, EP-&gt;A, CDE-&gt;P, HB-&gt;P, D-&gt;H, D-&gt;G, ABC-&gt;P, ABC-&gt;G}</strong></p>
+<p>判断D-&gt;H是否冗余, F’ ={AB-&gt;E, A-&gt;C, GP-&gt;B, EP-&gt;A, CDE-&gt;P, HB-&gt;P, D-&gt;G, ABC-&gt;P, ABC-&gt;G}<br><strong>D+ = DG</strong>, D-&gt;H不冗余, <strong>F ={AB-&gt;E, A-&gt;C, GP-&gt;B, EP-&gt;A, CDE-&gt;P, HB-&gt;P, D-&gt;H, D-&gt;G, ABC-&gt;P, ABC-&gt;G}</strong></p>
+<p>判断D-&gt;G是否冗余, F’ ={AB-&gt;E, A-&gt;C, GP-&gt;B, EP-&gt;A, CDE-&gt;P, HB-&gt;P, D-&gt;H, ABC-&gt;P, ABC-&gt;G}<br><strong>D+ = DH</strong>, D-&gt;G不冗余, <strong>F ={AB-&gt;E, A-&gt;C, GP-&gt;B, EP-&gt;A, CDE-&gt;P, HB-&gt;P, D-&gt;H, D-&gt;G, ABC-&gt;P, ABC-&gt;G}</strong></p>
+<p>判断ABC-&gt;G是否冗余, F’ ={AB-&gt;E, A-&gt;C, GP-&gt;B, EP-&gt;A, CDE-&gt;P, HB-&gt;P, D-&gt;H, D-&gt;G, ABC-&gt;P}<br><strong>ABC+ = ABCEP</strong>, ABC-&gt;G不冗余, <strong>F ={AB-&gt;E, A-&gt;C, GP-&gt;B, EP-&gt;A, CDE-&gt;P, HB-&gt;P, D-&gt;H, D-&gt;G, ABC-&gt;P, ABC-&gt;G}</strong></p>
+<p>故 <strong>Fm={AB-&gt;E, A-&gt;C, GP-&gt;B, EP-&gt;A, CDE-&gt;P, HB-&gt;P, D-&gt;H, D-&gt;G, ABC-&gt;P, ABC-&gt;G}</strong></p>
+<p><a href="https://hurry-hub.github.io/2021/06/06/3NF/">分解具有无损连接性和依赖保持性的3NF的方法和例子</a></p>
+
+  </article>
+
+  
+      
+    <div class="nexmoe-post-copyright">
+        <strong>Author：</strong>Hurry Rechard<br>
+        <strong>Link：</strong><a href="https://hurry-hub.github.io/2021/06/06/Fm/" title="https:&#x2F;&#x2F;hurry-hub.github.io&#x2F;2021&#x2F;06&#x2F;06&#x2F;Fm&#x2F;" target="_blank" rel="noopener">https:&#x2F;&#x2F;hurry-hub.github.io&#x2F;2021&#x2F;06&#x2F;06&#x2F;Fm&#x2F;</a><br>
+        
+            <strong>版权声明：</strong>本文采用 <a href="https://creativecommons.org/licenses/by-nc-sa/3.0/cn/deed.zh" target="_blank">CC BY-NC-SA 3.0 CN</a> 协议进行许可
+        
+    </div>
+
+
+  
+  
+  <div class="nexmoe-post-meta nexmoe-rainbow">
+    
+        <a class="nexmoefont icon-appstore-fill -link" href="/categories/sql/">sql</a>
+    
+    
+        <a class="nexmoefont icon-tag-fill -none-link" href="/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/" rel="tag">数据库</a>
+    
+</div>
+
+  
+      <div class="nexmoe-post-footer">
+          <section class="nexmoe-comment">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@latest/dist/gitalk.min.css">
+<div id="gitalk"></div>
+<script src="https://cdn.jsdelivr.net/npm/gitalk@latest/dist/gitalk.min.js"></script>
+<script type="text/javascript">
+    var gitalk = new Gitalk({
+        clientID: '37f200093d04e22cef87',
+        clientSecret: 'eca19b73fdc19551a488d42ae375334521108e27',
+        id: window.location.pathname,
+        repo: 'blogissue',
+        owner: 'hurry-hub',
+        admin: 'hurry-hub'
+    })
+    gitalk.render('gitalk')
+</script>
+</section>
+      </div>
+  
+</div>
+            <div class="nexmoe-post-right">
+              <div class="nexmoe-fixed">
+                  <div class="nexmoe-tool"> 
+                    
+                      
+                        
+                          
+                          
+                              <button class="mdui-fab catalog" style="overflow:unset;">
+                                  <i class="nexmoefont icon-i-catalog"></i>
+                                  <div class="nexmoe-toc">
+                                      <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%AE%9A%E4%B9%89"><span class="toc-number">1.</span> <span class="toc-text">定义</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%B1%82%E6%B3%95"><span class="toc-number">2.</span> <span class="toc-text">求法</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%B8%BE%E4%BE%8B"><span class="toc-number">3.</span> <span class="toc-text">举例</span></a></li></ol>
+                                  </div>
+                              </button>
+                          
+                          
+                      
+                    
+                      <a href="#nexmoe-content" class="toc-link" aria-label="回到顶部" title="top"><button class="mdui-fab mdui-ripple"><i class="nexmoefont icon-caret-top"></i></button></a>
+                  </div>
+              </div>
+            </div>
+        </div>
+    </div>
+     
+    <div id="nexmoe-search-space">
+        <div class="search-container">
+            <div class="search-header">
+                <div class="search-input-container">
+                    <input class="search-input" type="text" placeholder="Search" oninput="sinput();">
+                </div>
+                <a class="search-close" onclick="sclose();">×</a>
+            </div>
+            <div class="search-body"></div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/combine/npm/lazysizes@5.1.0/lazysizes.min.js,npm/mdui@0.4.3/dist/js/mdui.min.js?v=1"></script>
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js"></script>
+
+ 
+
+<script async src="/js/app.js?v=1649861912810"></script>
+
+
+
+<script src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.8.1/dist/js/jquery.justifiedGallery.min.js"></script>
+<script>
+	$(".justified-gallery").justifiedGallery({
+		rowHeight: 160,
+		margins: 10,
+	});
+</script>
+
+<script>
+(function(){
+    var bp = document.createElement('script');
+    bp.src = '//push.zhanzhang.baidu.com/push.js';
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+    
+
+
+
+
+
+    <!-- baidu Analytics -->
+<script>
+    var _hmt = _hmt || [];
+    (function() {var hm = document.createElement('script');
+    hm.src = 'https://hm.baidu.com/hm.js?4aab437d77fe444e7670ae55f85effce#&lt;ID&gt;';
+    var s = document.getElementsByTagName('script')[0];
+        s.parentNode.insertBefore(hm, s);
+    })();
+</script>
+
+</body>
+
+</html>
