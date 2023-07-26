@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+
+<html lang="zh-Hans">
+
+<head>
+    
+    <title>现代密码学第二章阅读笔记 - Hurry Rechard&#39;s Blog</title>
+    <meta charset="UTF-8">
+    <meta name="keywords" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5">
+    
+    
+
+    <!-- Site Verification -->
+    <meta name="baidu-site-verification" content="code-k5HcBW1pgY" />
+
+    <link rel="shortcut icon" href="https://raw.githubusercontent.com/hurry-hub/blogimage/main/img/favicon.ico" type="image/x-icon" />
+    <meta name="description" content="​        本章大部分证明已略去，需要的读者请自行翻阅原书，或者可在评论区进行讨论。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="现代密码学第二章阅读笔记">
+<meta property="og:url" content="https://hurry-hub.github.io/2023/07/26/crypt2/index.html">
+<meta property="og:site_name" content="Hurry Rechard&#39;s Blog">
+<meta property="og:description" content="​        本章大部分证明已略去，需要的读者请自行翻阅原书，或者可在评论区进行讨论。">
+<meta property="og:locale">
+<meta property="article:published_time" content="2023-07-26T06:47:50.000Z">
+<meta property="article:modified_time" content="2023-07-26T08:20:53.730Z">
+<meta property="article:author" content="Hurry Rechard">
+<meta property="article:tag" content="密码学">
+<meta name="twitter:card" content="summary">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/combine/npm/highlight.js@9.15.8/styles/atom-one-dark.css,npm/justifiedGallery@3.8.1/dist/css/justifiedGallery.min.css,gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css,npm/hexo-theme-nexmoe@latest/source/lib/mdui_043tiny/css/mdui.css,npm/hexo-theme-nexmoe@latest/source/lib/iconfont/iconfont.css?v=233" crossorigin>
+    <link rel="stylesheet" href="/css/style.css?v=1690359661841">
+    
+        <link rel="stylesheet" href="/css/dark.css?v=1690359661841">
+     
+    
+    <link rel="stylesheet" href="/lib/iconfont/iconfont.css?v=1690359661841">
+    
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+<body class="mdui-drawer-body-left">
+    
+    <div id="nexmoe-background">
+        <div class="nexmoe-bg" style="background-image: url(https://raw.githubusercontent.com/hurry-hub/blogimage/main/img/ayase.png)"></div>
+        <div class="mdui-appbar mdui-shadow-0">
+            <div class="mdui-toolbar">
+                <a mdui-drawer="{target: '#drawer', swipe: true}" title="menu" class="mdui-btn mdui-btn-icon mdui-ripple"><i class="mdui-icon nexmoefont icon-menu"></i></a>
+                <div class="mdui-toolbar-spacer"></div>
+                <!--<a href="javascript:;" class="mdui-btn mdui-btn-icon"><i class="mdui-icon material-icons">search</i></a>-->
+                <a href="/" title="Hurry Rechard" class="mdui-btn mdui-btn-icon"><img src="https://raw.githubusercontent.com/hurry-hub/blogimage/main/img/violet%20a.bmp# 网站 Logo" alt="Hurry Rechard"></a>
+            </div>
+        </div>
+    </div>
+    <div id="nexmoe-header">
+        <div class="nexmoe-drawer mdui-drawer" id="drawer">
+    <div class="nexmoe-avatar mdui-ripple">
+        <a href="/" title="Hurry Rechard">
+            <img src="https://raw.githubusercontent.com/hurry-hub/blogimage/main/img/violet%20a.bmp# 网站 Logo" alt="Hurry Rechard" alt="Hurry Rechard">
+        </a>
+    </div>
+    <div class="nexmoe-count">
+        <div><span>Articles</span>8</div>
+        <div><span>Tags</span>3</div>
+        <div><span>Categories</span>3</div>
+    </div>
+    <div class="nexmoe-list mdui-list" mdui-collapse="{accordion: true}">
+        
+        <a class="nexmoe-list-item mdui-list-item mdui-ripple false" href="/" title="回到首页">
+            <i class="mdui-list-item-icon nexmoefont icon-home"></i>
+            <div class="mdui-list-item-content">
+                回到首页
+            </div>
+        </a>
+        
+        <a class="nexmoe-list-item mdui-list-item mdui-ripple false" href="/archives.html" title="文章归档">
+            <i class="mdui-list-item-icon nexmoefont icon-container"></i>
+            <div class="mdui-list-item-content">
+                文章归档
+            </div>
+        </a>
+        
+        <a class="nexmoe-list-item mdui-list-item mdui-ripple false" href="/about.html" title="关于博客">
+            <i class="mdui-list-item-icon nexmoefont icon-info-circle"></i>
+            <div class="mdui-list-item-content">
+                关于博客
+            </div>
+        </a>
+        
+        <a class="nexmoe-list-item mdui-list-item mdui-ripple false" href="/py.html" title="我的朋友">
+            <i class="mdui-list-item-icon nexmoefont icon-unorderedlist"></i>
+            <div class="mdui-list-item-content">
+                我的朋友
+            </div>
+        </a>
+        
+    </div>
+    <aside id="nexmoe-sidebar">
+    
+    <div class="nexmoe-widget-wrap">
+    <div class="nexmoe-widget nexmoe-search">
+         
+            <form id="search_form" action_e="https://cn.bing.com/search?q=site:hurry-hub.github.io" onsubmit="return search();">
+                <label><input id="search_value" name="q" type="search" placeholder="Search"></label>
+            </form>
+         
+    </div>
+</div>
+    
+    <div class="nexmoe-widget-wrap">
+    <div class="nexmoe-widget nexmoe-social">
+        <a class="mdui-ripple" href="https://jq.qq.com/?_wv=1027&k=5CfKHun" target="_blank" mdui-tooltip="{content: 'QQ群'}" style="color: rgb(249, 174, 8);background-color: rgba(249, 174, 8, .1);">
+            <i class="nexmoefont icon-QQ"></i>
+        </a><a class="mdui-ripple" href="https://space.bilibili.com/438182397" target="_blank" mdui-tooltip="{content: '哔哩哔哩'}" style="color: rgb(231, 106, 141);background-color: rgba(231, 106, 141, .15);">
+            <i class="nexmoefont icon-bilibili"></i>
+        </a><a class="mdui-ripple" href="https://github.com/hurry-hub" target="_blank" mdui-tooltip="{content: 'GitHub'}" style="color: rgb(25, 23, 23);background-color: rgba(25, 23, 23, .15);">
+            <i class="nexmoefont icon-github"></i>
+        </a>
+    </div>
+</div>
+    
+    
+  <div class="nexmoe-widget-wrap">
+    <h3 class="nexmoe-widget-title">Categories</h3>
+    <div class="nexmoe-widget">
+
+      <ul class="category-list">
+
+        
+
+
+        
+
+        
+
+        <li class="category-list-item">
+          <a class="category-list-link" href="/categories/cryptography/">cryptography</a>
+          <span class="category-list-count">5</span>
+        </li>
+
+        
+
+        <li class="category-list-item">
+          <a class="category-list-link" href="/categories/os/">os</a>
+          <span class="category-list-count">1</span>
+        </li>
+
+        
+
+        <li class="category-list-item">
+          <a class="category-list-link" href="/categories/sql/">sql</a>
+          <span class="category-list-count">2</span>
+        </li>
+
+        
+      </ul>
+
+    </div>
+  </div>
+
+
+    
+    
+  <div class="nexmoe-widget-wrap">
+    <div id="randomtagcloud" class="nexmoe-widget tagcloud nexmoe-rainbow">
+      <a href="/tags/%E5%AF%86%E7%A0%81%E5%AD%A6/" style="font-size: 20px;">密码学</a> <a href="/tags/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/" style="font-size: 10px;">操作系统</a> <a href="/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/" style="font-size: 15px;">数据库</a>
+    </div>
+    
+  </div>
+
+    
+</aside>
+    <div class="nexmoe-copyright">
+        &copy; 2023 Hurry Rechard
+        Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+        & <a href="https://github.com/theme-nexmoe/hexo-theme-nexmoe" target="_blank">Nexmoe</a>
+        
+    </div>
+</div><!-- .nexmoe-drawer -->
+    </div>
+    <div id="nexmoe-content">
+        <div class="nexmoe-primary">
+            <div class="nexmoe-post">
+
+  <article>
+      
+          <div class="nexmoe-post-cover" style="padding-bottom: NaN%;"> 
+              <img data-src="https://raw.githubusercontent.com/hurry-hub/blogimage/main/img/yulong.jpg" data-sizes="auto" alt="现代密码学第二章阅读笔记" class="lazyload">
+              <h1>现代密码学第二章阅读笔记</h1>
+          </div>
+      
+      
+      <div class="nexmoe-post-meta nexmoe-rainbow" style="margin:10px 0!important;">
+    <a><i class="nexmoefont icon-calendar-fill"></i>2023年07月26日</a>
+    <a><i class="nexmoefont icon-areachart"></i>1.9k 字</a>
+    <a><i class="nexmoefont icon-time-circle-fill"></i>大概 8 分钟</a>
+</div>
+
+      
+
+      <p>​        本章大部分证明已略去，需要的读者请自行翻阅原书，或者可在评论区进行讨论。</p>
+<span id="more"></span>
+
+<h1 id="随机数生成"><a href="#随机数生成" class="headerlink" title="随机数生成"></a>随机数生成</h1><p>&emsp;&emsp;现代随机数生成算法共以下两步：</p>
+<ul>
+<li>得到一个<strong>高熵</strong>的数据池</li>
+<li><strong>处理</strong>高熵数据用以生成比特流</li>
+</ul>
+<p>&emsp;&emsp;高熵数据池的构成需要不可预知的数据来源，如<strong>外部输入</strong>和<strong>物理现象</strong>，前者可以是网络事件的延迟、后者可以是热放射周期。<br>&emsp;&emsp;处理高熵数据以生成随机比特流的正式方式在以后讨论，此处仅简单介绍一种方法：假设数据池中有一不随机比特序列，其中 1 的出现概率为 p，0 出现的概率为 1 - p；此时我们选择当序列中出现 “01” 时输出 0、出现 “10” 时输出 1 (其余情况不输出)，便可保证输出的比特序列是均匀的。<br>&emsp;&emsp;注意，密码学中随机数生成器是有明确要求的，必须使用“为密码使用设计”的随机数生成器而不是通用随机数生成器，比如C语言中 stdlib.h 里的函数 <strong>rand( )</strong> 并不满足密码学使用。</p>
+<h1 id="2-1-定义"><a href="#2-1-定义" class="headerlink" title="2.1 定义"></a>2.1 定义</h1><ul>
+<li>$\mathcal{M}$：明文空间</li>
+<li>$\mathcal{K}$：密钥空间。Gen 可能生成的所有密钥集合</li>
+<li>$\mathcal{C}$：密文空间。Enc 可能生成的所有密文集合</li>
+<li><strong>Gen</strong>：密钥生成算法。根据某些分布生成密钥 k 的概率性算法</li>
+<li><strong>Enc</strong>：加密算法。输入$k \in \mathcal{K}$和$m \in \mathcal{M}$生成密文 c 的概率性算法，写作 $c \leftarrow Enc_k(m)$ (当为确定性算法时写作 $c:= Enc_k(m)$)</li>
+<li><strong>Dec</strong>：解密算法。输入$k \in \mathcal{K}$和$c \in \mathcal{C}$生成明文 $m \in \mathcal{M}$ 的算法。满足 perfect correctness 的 Dec 可称为确定性解密算法，同时可记作 $m \leftarrow Enc_k(c)$</li>
+<li><strong>perfect correctness</strong>：对于所有 $k \in \mathcal{K}$和$m \in \mathcal{M}$ 以及任何 Enc 生成的 c，可保证 $Dec_k(c) = m$的概率为 1.</li>
+<li>$K$： 表示 Gen 生成密钥取值的随机变量</li>
+<li>$M$：表示被加密明文的随机变量，需要独立于 $K$</li>
+<li>$C$：表示 Enc 输出密文的随机变量</li>
+<li>$\mathrm{Pr}[K = k]$：Gen 生成的密钥为 k 的概率</li>
+<li>$\mathrm{Pr}[M = m]$：明文取值于 $m \in \mathcal{M}$ 的概率 </li>
+<li>$\mathrm{Pr}[C=c]$：密文等于固定值 c 的概率<h2 id="1-Perfect-Secrecy"><a href="#1-Perfect-Secrecy" class="headerlink" title="(1) Perfect Secrecy"></a>(1) Perfect Secrecy</h2>&emsp;&emsp;假定敌手知道 $M$ 的概率分布，即敌手知道不同信息被发送的概率，同时敌手知道使用的加密方案，唯一不知道的是通信双方共享的密钥。敌手可窃听到通信双方的交流内容，即该攻击方式为<strong>仅密文攻击</strong>。<br>&emsp;&emsp;对于可实现完全保密(<strong>perfect secret</strong>)的密码方案，攻击者窃听到的密文需要对其识别明文没有任何帮助，即以被观察到的密文为条件，明文 $m \in \mathcal{M}$被发送的<strong>后验概率</strong>应该和 m 被发送的<strong>先验概率</strong>没有区别，即密文不会揭露明文的任何信息。<h3 id="定义一-不可溯源-—-gt-DEFINITION-2-3"><a href="#定义一-不可溯源-—-gt-DEFINITION-2-3" class="headerlink" title="定义一(不可溯源)  —-&gt; DEFINITION 2.3"></a>定义一(不可溯源)  —-&gt; DEFINITION 2.3</h3>&emsp;&emsp;对于明文空间 $\mathcal{M}$ 的密码方案 (Gen, Enc, Dec)，当对于 $M$ 中所有的概率分布，每个明文 $m \in \mathcal{M}$ 和每个满足 $\mathrm{Pr}[C=c] &gt; 0$的密文 $c \in \mathcal{C}$，有：<br>$$<br>\mathrm{Pr}[M = m | C = c] = \mathrm{Pr}[M = m]<br>$$<br>&emsp;&emsp;则可以说该密码方案是<strong>完全保密</strong>的，其中$c \in \mathcal{C}$是为了保证条件概率基于零概率时间。<h3 id="定义二-不可区分"><a href="#定义二-不可区分" class="headerlink" title="定义二(不可区分)"></a>定义二(不可区分)</h3>&emsp;&emsp;此定义基于密文分布不依赖于明文，即对于任意两个明文 $m, m’ \in \mathcal{M}$， m 被加密时的密文分布要和 m’ 被加密的密文分布相同，公式表示如下：<br>$$<br>\mathrm{Pr}[Enc_K(m) = c] = \mathrm{Pr}[Enc_K(m’) = c]<br>$$<br>&emsp;&emsp;其中概率是基于 $K$ 的选择和 Enc 的随机性，同时以上概率都只基于加密方案，并不依赖于 $\mathcal{M}$的底层分布。以上情景表示密文中不包含明文相关的任意信息，即攻击者无法区分 m 和 m’ 的加密形式。</li>
+</ul>
+<h3 id="定理一-—-gt-LEMMA-2-5"><a href="#定理一-—-gt-LEMMA-2-5" class="headerlink" title="定理一 —-&gt; LEMMA 2.5"></a>定理一 —-&gt; LEMMA 2.5</h3><p>&emsp;&emsp;带有明文空间 $\mathcal{M}$ 的加密方案 <strong>(Gen, Enc, Dec)</strong> 是完全保密的，当且仅当 $\mathcal{M}$ 中的每个 m, m’ 和 $\mathcal{C}$ 中的每个 c 都满足定义二中的公式。</p>
+<h2 id="2-完美不可区分性"><a href="#2-完美不可区分性" class="headerlink" title="(2) 完美不可区分性"></a>(2) 完美不可区分性</h2><p>&emsp;&emsp;该部分为完全保密的另一等效概念。下面介绍敌对不可区分实验 $\mathrm{PrivK}_{\mathcal{A}, \Pi }^{\mathrm{eva}}$，其中 $\mathcal{A}$ 表示敌对方，$\Pi$ = <strong>(Gen, Enc, Dec)</strong> 表示明文空间为 $\mathcal{M}$ 的密码方案：</p>
+<ol>
+<li>敌手 $\mathcal{A}$ 生成明文对 $m_0,m_1 \in \mathcal{M}$</li>
+<li>使用<strong>Gen</strong> 生成密钥 <strong>k</strong>, 同时选定比特位 $b \in {0, 1}$。计算 $c \leftarrow Enc_k(m_b)$ 并将其发送至 $\mathcal{A}$，其中 <strong>c</strong> 为<strong>挑战密文</strong></li>
+<li>$\mathcal{A}$ 生成比特 <strong>b’</strong></li>
+<li>实验的输出被定义为：1，当 b’ = b; 反之为 0.当实验输出为1 时我们称 $\mathrm{PrivK}_{\mathcal{A}, \Pi }^{\mathrm{eva}} = 1$ 并称 $\mathcal{A}$ 成功<h3 id="定义一-不可溯源-—-gt-DEFINITION-2-6"><a href="#定义一-不可溯源-—-gt-DEFINITION-2-6" class="headerlink" title="定义一(不可溯源) —-&gt; DEFINITION 2.6"></a>定义一(不可溯源) —-&gt; DEFINITION 2.6</h3>&emsp;&emsp;我们称明文空间 $\mathcal{M}$ 的密码方案 $\Pi$ = <strong>(Gen, Enc, Dec)</strong> 为完美不可区分的当且仅当对于每一个敌手 $\mathcal{A}$ 都有<br>$$<br>\mathrm{Pr}[\mathrm{PrivK}_{\mathcal{A}, \Pi }^{\mathrm{eva}} = 1] = \frac{1}{2}<br>$$<h3 id="定理一-—-gt-LEMMA-2-7"><a href="#定理一-—-gt-LEMMA-2-7" class="headerlink" title="定理一 —-&gt; LEMMA 2.7"></a>定理一 —-&gt; LEMMA 2.7</h3>&emsp;&emsp;加密方案 $\Pi$ 是<strong>完全保密</strong>的当且仅当其是<strong>完美不可区分</strong>的。</li>
+</ol>
+<h1 id="2-2-一次一密"><a href="#2-2-一次一密" class="headerlink" title="2.2 一次一密"></a>2.2 一次一密</h1><p>&emsp;&emsp;我们定义 $a \oplus b$ 表示两等长二进制串 a 和 b 的<strong>逐比特异或</strong>。在一次一密方案中，密钥是和明文等长的独立字串，密文只需明文和密钥逐比特异或便可得到。正式定义如下：</p>
+<blockquote>
+<p>给定整数 $\mathscr{l} &gt; 0$，明文空间 $\mathcal{M}$，密钥空间 $\mathcal{K}$ 和密文空间 $\mathcal{C}$ 都等价于 ${0, 1}^l$ (长度 $l$ 的二进制串)</p>
+</blockquote>
+<ul>
+<li><strong>Gen</strong>: 密钥生成算法根据均匀分布从密钥空间 $\mathcal{K} = {0, 1}^l$选择一密钥</li>
+<li><strong>Enc</strong>: 给定密钥 $k \in {0, 1}^l$ 和明文 $m \in {0, 1}^l$ ，加密算法的输出为密文 $c := k \oplus m$</li>
+<li><strong>Dec</strong>: 给定密钥 $k \in {0, 1}^l$ 和密文 $c \in {0, 1}^l$ ，解密算法的输出为明文 $m := k \oplus c$</li>
+</ul>
+<p>&emsp;&emsp;从正确性来看，对于每个密钥 k 和每段明文 m 都有 $Dec_k(Enc_k(m)) = k \oplus k \oplus m = m$，即一次一密是有效的密码方案。</p>
+<h3 id="缺点"><a href="#缺点" class="headerlink" title="缺点"></a>缺点</h3><ul>
+<li>密钥长度需要和明文一致</li>
+<li>密钥只能使用一次</li>
+</ul>
+<h1 id="2-3-完全保密的限制"><a href="#2-3-完全保密的限制" class="headerlink" title="2.3 完全保密的限制"></a>2.3 完全保密的限制</h1><p>&emsp;&emsp;总的来说，完全保密要求密码方案的密钥空间至少和明文空间一样大。(另一限制是密钥只能使用一次)</p>
+<h1 id="2-4-香农的定理"><a href="#2-4-香农的定理" class="headerlink" title="2.4 香农的定理"></a>2.4 香农的定理</h1><p>&emsp;&emsp;该定理首先密码方案 <strong>(Gen, Enc, Dec)</strong> 要求 $|\mathcal{M}| = |\mathcal{K}| = |\mathcal{C}|$，即三个空间大小一致，在此基础上当且仅当满足以下两点才可称该方案是完全保密的：</p>
+<ol>
+<li>每个密钥 $k \in \mathcal{K}$ 都是以 $1 / |\mathcal{K}|$ 的概率被 <strong>Gen</strong> 选中的</li>
+<li>对于每个明文 $m \in \mathcal{M}$ 和每个密文 $c \in \mathcal{C}$，存在唯一的密钥 $k \in \mathcal{K}$ 使得 $\mathrm{Enc}_k(m)$ 的结果为 c</li>
+</ol>
+
+  </article>
+
+  
+      
+    <div class="nexmoe-post-copyright">
+        <strong>Author：</strong>Hurry Rechard<br>
+        <strong>Link：</strong><a href="https://hurry-hub.github.io/2023/07/26/crypt2/" title="https:&#x2F;&#x2F;hurry-hub.github.io&#x2F;2023&#x2F;07&#x2F;26&#x2F;crypt2&#x2F;" target="_blank" rel="noopener">https:&#x2F;&#x2F;hurry-hub.github.io&#x2F;2023&#x2F;07&#x2F;26&#x2F;crypt2&#x2F;</a><br>
+        
+            <strong>版权声明：</strong>本文采用 <a href="https://creativecommons.org/licenses/by-nc-sa/3.0/cn/deed.zh" target="_blank">CC BY-NC-SA 3.0 CN</a> 协议进行许可
+        
+    </div>
+
+
+  
+  
+  <div class="nexmoe-post-meta nexmoe-rainbow">
+    
+        <a class="nexmoefont icon-appstore-fill -link" href="/categories/cryptography/">cryptography</a>
+    
+    
+        <a class="nexmoefont icon-tag-fill -none-link" href="/tags/%E5%AF%86%E7%A0%81%E5%AD%A6/" rel="tag">密码学</a>
+    
+</div>
+
+  
+      <div class="nexmoe-post-footer">
+          <section class="nexmoe-comment">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@latest/dist/gitalk.min.css">
+<div id="gitalk"></div>
+<script src="https://cdn.jsdelivr.net/npm/gitalk@latest/dist/gitalk.min.js"></script>
+<script type="text/javascript">
+    var gitalk = new Gitalk({
+        clientID: '37f200093d04e22cef87',
+        clientSecret: 'eca19b73fdc19551a488d42ae375334521108e27',
+        id: window.location.pathname,
+        repo: 'blogissue',
+        owner: 'hurry-hub',
+        admin: 'hurry-hub'
+    })
+    gitalk.render('gitalk')
+</script>
+</section>
+      </div>
+  
+</div>
+            <div class="nexmoe-post-right">
+              <div class="nexmoe-fixed">
+                  <div class="nexmoe-tool"> 
+                    
+                      
+                        
+                          
+                          
+                              <button class="mdui-fab catalog" style="overflow:unset;">
+                                  <i class="nexmoefont icon-i-catalog"></i>
+                                  <div class="nexmoe-toc">
+                                      <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E9%9A%8F%E6%9C%BA%E6%95%B0%E7%94%9F%E6%88%90"><span class="toc-number">1.</span> <span class="toc-text">随机数生成</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#2-1-%E5%AE%9A%E4%B9%89"><span class="toc-number">2.</span> <span class="toc-text">2.1 定义</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-Perfect-Secrecy"><span class="toc-number">2.1.</span> <span class="toc-text">(1) Perfect Secrecy</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%9A%E4%B9%89%E4%B8%80-%E4%B8%8D%E5%8F%AF%E6%BA%AF%E6%BA%90-%E2%80%94-gt-DEFINITION-2-3"><span class="toc-number">2.1.1.</span> <span class="toc-text">定义一(不可溯源)  —-&gt; DEFINITION 2.3</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%9A%E4%B9%89%E4%BA%8C-%E4%B8%8D%E5%8F%AF%E5%8C%BA%E5%88%86"><span class="toc-number">2.1.2.</span> <span class="toc-text">定义二(不可区分)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%9A%E7%90%86%E4%B8%80-%E2%80%94-gt-LEMMA-2-5"><span class="toc-number">2.1.3.</span> <span class="toc-text">定理一 —-&gt; LEMMA 2.5</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-%E5%AE%8C%E7%BE%8E%E4%B8%8D%E5%8F%AF%E5%8C%BA%E5%88%86%E6%80%A7"><span class="toc-number">2.2.</span> <span class="toc-text">(2) 完美不可区分性</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%9A%E4%B9%89%E4%B8%80-%E4%B8%8D%E5%8F%AF%E6%BA%AF%E6%BA%90-%E2%80%94-gt-DEFINITION-2-6"><span class="toc-number">2.2.1.</span> <span class="toc-text">定义一(不可溯源) —-&gt; DEFINITION 2.6</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%9A%E7%90%86%E4%B8%80-%E2%80%94-gt-LEMMA-2-7"><span class="toc-number">2.2.2.</span> <span class="toc-text">定理一 —-&gt; LEMMA 2.7</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#2-2-%E4%B8%80%E6%AC%A1%E4%B8%80%E5%AF%86"><span class="toc-number">3.</span> <span class="toc-text">2.2 一次一密</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BC%BA%E7%82%B9"><span class="toc-number">3.0.1.</span> <span class="toc-text">缺点</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#2-3-%E5%AE%8C%E5%85%A8%E4%BF%9D%E5%AF%86%E7%9A%84%E9%99%90%E5%88%B6"><span class="toc-number">4.</span> <span class="toc-text">2.3 完全保密的限制</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#2-4-%E9%A6%99%E5%86%9C%E7%9A%84%E5%AE%9A%E7%90%86"><span class="toc-number">5.</span> <span class="toc-text">2.4 香农的定理</span></a></li></ol>
+                                  </div>
+                              </button>
+                          
+                          
+                      
+                    
+                      <a href="#nexmoe-content" class="toc-link" aria-label="回到顶部" title="top"><button class="mdui-fab mdui-ripple"><i class="nexmoefont icon-caret-top"></i></button></a>
+                  </div>
+              </div>
+            </div>
+        </div>
+    </div>
+     
+    <div id="nexmoe-search-space">
+        <div class="search-container">
+            <div class="search-header">
+                <div class="search-input-container">
+                    <input class="search-input" type="text" placeholder="Search" oninput="sinput();">
+                </div>
+                <a class="search-close" onclick="sclose();">×</a>
+            </div>
+            <div class="search-body"></div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/combine/npm/lazysizes@5.1.0/lazysizes.min.js,npm/mdui@0.4.3/dist/js/mdui.min.js?v=1"></script>
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js"></script>
+
+ 
+
+<script async src="/js/app.js?v=1690359661845"></script>
+
+
+
+<script src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.8.1/dist/js/jquery.justifiedGallery.min.js"></script>
+<script>
+	$(".justified-gallery").justifiedGallery({
+		rowHeight: 160,
+		margins: 10,
+	});
+</script>
+
+<script>
+(function(){
+    var bp = document.createElement('script');
+    bp.src = '//push.zhanzhang.baidu.com/push.js';
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+    
+
+
+
+
+
+    <!-- baidu Analytics -->
+<script>
+    var _hmt = _hmt || [];
+    (function() {var hm = document.createElement('script');
+    hm.src = 'https://hm.baidu.com/hm.js?4aab437d77fe444e7670ae55f85effce#&lt;ID&gt;';
+    var s = document.getElementsByTagName('script')[0];
+        s.parentNode.insertBefore(hm, s);
+    })();
+</script>
+
+</body>
+
+</html>
